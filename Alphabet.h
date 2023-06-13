@@ -10,7 +10,11 @@ private:
 public:
     Alphabet() = default;
 
-    explicit Alphabet(const Vector<char>& symbols);
+    Alphabet(const Vector<char> &symbols);
+
+    bool contains(char c) const;
 
     void add(char c);
+
+    void remove(char c);
 };
