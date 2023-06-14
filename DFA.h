@@ -22,6 +22,8 @@ private:
 
     State errorState() const;
 
+    void validate(State state) const;
+
 public:
     State addState();
 
@@ -49,5 +51,5 @@ public:
 
     bool accepts(const char *word) const;
 
-    friend void print(const DFA& dfa);
+    friend void print(const DFA &dfa);
 };

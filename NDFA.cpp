@@ -27,15 +27,6 @@ void NDFA::validate(State state) const {
     }
 }
 
-namespace {
-    template<class T, class Collection>
-    void removeAndShift(T element, Collection &collection) {
-        collection.remove(element);
-        kstd::transform(collection.begin(), collection.end(),
-                        collection.begin(), SubtractOneAfter<T>(element));
-    }
-}
-
 void NDFA::removeState(NDFA::State state) {
     validate(state);
 
