@@ -17,6 +17,10 @@ DFA::State DFA::addState() {
     return lastState();
 }
 
+DFA::State DFA::errorState() const {
+    return transitions.size();
+}
+
 void DFA::removeState(DFA::State state) {
 //    if (!isValid(state)) {
 //        throw std::logic_error(INVALID_STATE);
@@ -46,8 +50,7 @@ void DFA::removeState(DFA::State state) {
 }
 
 DFA::State DFA::addInitialState() {
-    transitions.pushBack({});
-    initialState = lastState();
+    initialState = addState();
     return initialState;
 }
 
@@ -60,9 +63,7 @@ void DFA::makeInitialState(DFA::State state) {
 
 
 DFA::State DFA::addFinalState() {
-    transitions.pushBack({});
-    State final = lastState();
-
+    State final = addState();
     finalStates.add(final);
     return final;
 }
@@ -81,14 +82,6 @@ void DFA::removeFinalState(DFA::State state) {
     finalStates.remove(state);
 }
 
-void DFA::addSymbol(char s) {
-    alphabet.add(s);
-}
-
-void DFA::removeSymbol(char s) {
-    alphabet.remove(s);
-}
-
 void DFA::addTransition(DFA::State from, char with, DFA::State to) {
     if (!isValid(from) || !isValid(to)) {
         throw std::logic_error(INVALID_STATE);
@@ -98,14 +91,16 @@ void DFA::addTransition(DFA::State from, char with, DFA::State to) {
         throw std::logic_error(INVALID_SYMBOL);
     }
 
-    Vector<Transition> &stateTransitions = transitions[from];
-    for (Transition &transition: stateTransitions) {
-        if (with == transition.first) {
-            transition.second = to;
-            return;
-        }
+    Vector<Transition> &stateTr = transitions[from];
+    auto tr = Algorithm::findIf(stateTr.begin(), stateTr.end(),
+                                [with](const Transition &tr) {
+                                    return tr.first == with;
+                                });
+    if (tr == stateTr.end()) {
+        stateTr.pushBack({with, to});
+    } else {
+        tr->second = to;
     }
-    stateTransitions.pushBack({with, to});
 }
 
 void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
@@ -138,8 +133,7 @@ void DFA::makeTotal() {
         return;
     }
 
-    transitions.pushBack({});
-    State dump = lastState();
+    State dump = addState();
 
     for (State s = 0; s < transitions.size(); ++s) {
         Vector<Transition> &stateTr = transitions[s];
@@ -160,10 +154,6 @@ void DFA::makeTotal() {
 
 void DFA::removeUnreachableStates() {
 
-}
-
-DFA::State DFA::errorState() const {
-    return transitions.size();
 }
 
 
@@ -190,14 +180,6 @@ bool DFA::accepts(const char *word) const {
     }
 
     return finalStates.contains(next);
-}
-
-void DFA::setAlphabet(const Alphabet &alphabet) {
-    this->alphabet = alphabet;
-}
-
-void DFA::setAlphabet(Alphabet &&alphabet) {
-    this->alphabet = std::move(alphabet);
 }
 
 
