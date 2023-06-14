@@ -9,6 +9,15 @@ namespace Algorithm {
         }
         return last;
     }
+    template<class InputIt, class UnitaryPredicate>
+    InputIt findIf(InputIt first, InputIt last,UnitaryPredicate p) {
+        for (auto it = first; it != last; ++it) {
+            if (p(*it)) {
+                return it;
+            }
+        }
+        return last;
+    }
 
     template<class InputIt, class UnitaryPredicate>
     bool allOf(InputIt first, InputIt last, UnitaryPredicate p) {
