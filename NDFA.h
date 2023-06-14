@@ -5,8 +5,10 @@
 
 class NDFA : public Automata {
 public:
-    typedef Pair<char, Vector<State>> Transition;
+    typedef Pair<char, OrderedSet<State>> Transition;
     typedef Vector<Vector<Transition>> TransitionCollection;
+
+    friend class NDFAFactory;
 
 protected:
     StateCollection initialStates;
@@ -21,6 +23,8 @@ private:
     State errorState() const;
 
     int accepts(State from, const char *word) const;
+
+    NDFA &operator+=(const NDFA &other);
 
 public:
     // State logic
@@ -51,4 +55,15 @@ public:
     void makeTotal();
 
     bool accepts(const char *word) const;
+
+    NDFA &operator|=(const NDFA &other);
+
+    NDFA &operator*=(const NDFA &other);
+    NDFA operator*();
+
+    friend void print(const NDFA &ndfa);
 };
+
+NDFA operator|(const NDFA &rhs, const NDFA &lhs);
+
+NDFA operator*(const NDFA &rhs, const NDFA &lhs);

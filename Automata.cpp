@@ -12,6 +12,14 @@ void Automata::addSymbol(char s) {
     alphabet.add(s);
 }
 
+void Automata::addSymbols(const Alphabet &other) {
+    for (auto s: other) {
+        alphabet.add(s);
+    }
+}
+
 void Automata::removeSymbol(char s) {
     alphabet.remove(s);
 }
+
+

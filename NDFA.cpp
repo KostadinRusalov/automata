@@ -41,15 +41,9 @@ void NDFA::removeState(NDFA::State state) {
 
     for (auto &stateTr: transitions) {
         for (auto &tr: stateTr) {
-            for (size_t i = 0; i < tr.second.size(); ++i) {
-                auto &sts = tr.second;
-                if (sts[i] == state) {
-                    sts.erase(sts.cbegin() + i);
-                    --i;
-                } else if (sts[i] > state) {
-                    --sts[i];
-                }
-            }
+            tr.second.remove(state);
+            Algorithm::transform(tr.second.begin(), tr.second.end(),
+                                 tr.second.begin(), subtractOne);
         }
     }
 }
@@ -98,13 +92,13 @@ void NDFA::removeFinalState(NDFA::State state) {
 }
 
 void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
-    if (!isValid(from) || !isValid(to)) {
-        throw std::logic_error(INVALID_STATE);
-    }
-
-    if (!alphabet.contains(with)) {
-        throw std::logic_error(INVALID_SYMBOL);
-    }
+//    if (!isValid(from) || !isValid(to)) {
+//        throw std::logic_error(INVALID_STATE);
+//    }
+//
+//    if (!alphabet.contains(with)) {
+//        throw std::logic_error(INVALID_SYMBOL);
+//    }
 
     auto &stateTr = transitions[from];
     auto tr = Algorithm::findIf(stateTr.begin(), stateTr.end(),
@@ -112,9 +106,9 @@ void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
                                     return tr.first == with;
                                 });
     if (tr == stateTr.end()) {
-        stateTr.pushBack({with, {to}});
+        stateTr.pushBack({with, {{to}}});
     } else {
-        tr->second.pushBack(to);
+        tr->second.add(to);
     }
 }
 
@@ -135,11 +129,7 @@ void NDFA::removeTransition(NDFA::State from, char with, NDFA::State to) {
     if (tr == stateTr.end()) {
         return;
     }
-    auto p = Algorithm::findIf(tr->second.cbegin(), tr->second.cend(),
-                               [to](State state) {
-                                   return state == to;
-                               });
-    tr->second.erase(p);
+    tr->second.remove(to);
 }
 
 bool NDFA::isTotal() const {
@@ -198,11 +188,113 @@ bool NDFA::accepts(const char *word) const {
     int sum = 0;
     for (State initial: initialStates) {
         sum += accepts(initial, word);
-        if (sum == 1) {
+        if (sum >= 1) {
             return true;
         }
     }
     return false;
 }
 
+NDFA &NDFA::operator+=(const NDFA &other) {
+    size_t offsetCount = transitions.size();
 
+    auto offset = [offsetCount](State state) {
+        return state + offsetCount;
+    };
+
+    for (auto &stateTr: other.transitions) {
+        auto newState = addState();
+
+        for (auto &tr: stateTr) {
+            for (auto &st: tr.second) {
+                addTransition(newState, tr.first, offset(st));
+            }
+        }
+    }
+
+    return *this;
+}
+
+NDFA &NDFA::operator|=(const NDFA &other) {
+    // TODO ednkakva azbuka ?
+    size_t offsetCount = transitions.size();
+    auto offset = [offsetCount](State state) {
+        return state + offsetCount;
+    };
+    operator+=(other);
+
+    for (auto initial: other.initialStates) {
+        makeInitialState(offset(initial));
+    }
+
+    for (auto final: other.finalStates) {
+        makeFinalState(offset(final));
+    }
+    return *this;
+}
+
+NDFA &NDFA::operator*=(const NDFA &other) {
+    size_t offsetCount = transitions.size();
+    auto offset = [offsetCount](State state) {
+        return state + offsetCount;
+    };
+    operator+=(other);
+
+    for (auto final: finalStates) {
+        for (auto initial: other.initialStates) {
+            for (auto &tr: other.transitions[initial]) {
+                for (auto st: tr.second) {
+                    addTransition(final, tr.first, offset(st));
+                }
+            }
+        }
+    }
+
+    auto it = Algorithm::findIf(other.initialStates.begin(),
+                                other.initialStates.end(),
+                                [&other](State state) {
+                                    return other.finalStates.contains(state);
+                                });
+
+    if (it == other.initialStates.end()) {
+        for (auto final: finalStates) {
+            finalStates.remove(final);
+        }
+    }
+
+    for (auto final: other.finalStates) {
+        makeFinalState(offset(final));
+    }
+    return *this;
+}
+
+NDFA NDFA::operator*() {
+    NDFA n(*this);
+
+    n.initialStates.clear();
+    n.makeFinalState(n.addInitialState());
+
+    for (auto final: n.finalStates) {
+        for (auto initial: initialStates) {
+            for (auto &tr: transitions[initial]) {
+                for (auto st: tr.second) {
+                    n.addTransition(final, tr.first, st);
+                }
+            }
+        }
+    }
+    return n;
+}
+
+
+NDFA operator|(const NDFA &rhs, const NDFA &lhs) {
+    NDFA n(rhs);
+    n |= lhs;
+    return n;
+}
+
+NDFA operator*(const NDFA &rhs, const NDFA &lhs) {
+    NDFA n(rhs);
+    n *= lhs;
+    return n;
+}

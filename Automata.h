@@ -20,5 +20,7 @@ public:
 
     void addSymbol(char s);
 
+    void addSymbols(const Alphabet &other);
+
     void removeSymbol(char s);
 };
