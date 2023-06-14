@@ -1,16 +1,24 @@
 #pragma once
 
-#include "Alphabet.h"
-#include "State.hpp"
+#include "MyStructures/OrderedSet/OrderedSet.hpp"
 
-template<class T>
 class Automata {
+public:
+    typedef OrderedSet<char> Alphabet;
+    typedef unsigned State;
+    typedef OrderedSet<State> StateCollection;
+
 protected:
     Alphabet alphabet;
-    Vector<State<T>> states;
-    Vector<State<T> *> finalStates;
 
 public:
-
     virtual ~Automata() = default;
+
+    void setAlphabet(const Alphabet &alphabet);
+
+    void setAlphabet(Alphabet &&alphabet);
+
+    void addSymbol(char s);
+
+    void removeSymbol(char s);
 };
