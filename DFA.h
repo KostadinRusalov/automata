@@ -7,14 +7,15 @@
 class DFA : public Automata {
 public:
     typedef unsigned State;
-    typedef Vector<State> StateCollection;
+    typedef OrderedSet<State> StateCollection;
     typedef Pair<char, State> Transition;
     typedef Vector<Vector<Transition>> TransitionCollection;
-
 protected:
+    Alphabet alphabet;
     State initialState;
     StateCollection finalStates;
     TransitionCollection transitions;
+
 private:
     bool isValid(State state) const;
 

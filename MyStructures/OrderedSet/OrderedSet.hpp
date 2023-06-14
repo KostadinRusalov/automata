@@ -99,7 +99,7 @@ void OrderedSet<T>::add(const T &element) {
             break;
         }
 
-        swap(elements[last], elements[last - 1]);
+        Algorithm::swap(elements[last], elements[last - 1]);
         --last;
     }
 }
@@ -124,9 +124,9 @@ void OrderedSet<T>::add(T &&element) {
 
 template<class T>
 void OrderedSet<T>::remove(const T &element) {
-    const_iterator el = find(element);
-    if (el != cend()) {
-        elements.erase(el);
+    const_iterator pos = cbegin() + (find(element) - begin());
+    if (pos != cend()) {
+        elements.erase(pos);
     }
 }
 

@@ -24,7 +24,25 @@ void DFA::removeState(DFA::State state) {
 //    if (state == initialState) {
 //        initialState = transitions.size() - 1;
 //    }
+//
+//    finalStates.remove(state);
+//    Algorithm::transform(finalStates.begin(), finalStates.end(), finalStates.begin(),
+//                         [state](State curr) {
+//                             return curr > state ? curr - 1 : curr;
+//                         });
+//
 //    transitions.erase(transitions.cbegin() + state);
+//    for (auto &stateTr: transitions) {
+//        Vector<Transition> toErase(stateTr.size());
+//        for (auto &tr: stateTr) {
+//            if (tr.second == state) {
+//                toErase.pushBack(tr);
+//            }
+//        }
+//        for (auto &tr: toErase) {
+//
+//        }
+//    }
 }
 
 DFA::State DFA::addInitialState() {
@@ -45,7 +63,7 @@ DFA::State DFA::addFinalState() {
     transitions.pushBack({});
     State final = lastState();
 
-    finalStates.pushBack(final);
+    finalStates.add(final);
     return final;
 }
 
@@ -53,18 +71,14 @@ void DFA::makeFinalState(DFA::State state) {
     if (!isValid(state)) {
         throw std::logic_error(INVALID_STATE);
     }
-    finalStates.pushBack(state);
+    finalStates.add(state);
 }
 
 void DFA::removeFinalState(DFA::State state) {
     if (!isValid(state)) {
         throw std::logic_error(INVALID_STATE);
     }
-
-    auto pos = find(finalStates.cbegin(), finalStates.cend(), state);
-    if (pos != finalStates.cend()) {
-        finalStates.erase(pos);
-    }
+    finalStates.remove(state);
 }
 
 void DFA::addSymbol(char s) {
@@ -105,7 +119,7 @@ void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
 
     Vector<Transition> &st = transitions[from];
     Transition transition(with, to);
-    auto pos = find(st.cbegin(), st.cend(), transition);
+    auto pos = Algorithm::find(st.cbegin(), st.cend(), transition);
 
     if (pos != st.cend()) {
         st.erase(pos);
@@ -113,10 +127,10 @@ void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
 }
 
 bool DFA::isTotal() const {
-    return allOf(transitions.begin(), transitions.end(),
-                 [&](const Vector<Transition> &tr) {
-                     return tr.size() == alphabet.size();
-                 });
+    return Algorithm::allOf(transitions.begin(), transitions.end(),
+                            [&](const Vector<Transition> &tr) {
+                                return tr.size() == alphabet.size();
+                            });
 }
 
 void DFA::makeTotal() {
@@ -125,21 +139,21 @@ void DFA::makeTotal() {
     }
 
     transitions.pushBack({});
-    State dump = transitions.size() - 1;
+    State dump = lastState();
 
     for (State s = 0; s < transitions.size(); ++s) {
         Vector<Transition> &stateTr = transitions[s];
+        if (stateTr.size() == alphabet.size()) {
+            continue;
+        }
+        Alphabet leftSymbols(alphabet);
 
-        if (stateTr.size() < alphabet.size()) {
-            Alphabet leftSymbols(alphabet);
+        for (auto &tr: stateTr) {
+            leftSymbols.remove(tr.first);
+        }
 
-            for (auto &tr: stateTr) {
-                leftSymbols.remove(tr.first);
-            }
-
-            for (char symbol: leftSymbols) {
-                addTransition(s, symbol, dump);
-            }
+        for (char symbol: leftSymbols) {
+            addTransition(s, symbol, dump);
         }
     }
 }
@@ -175,7 +189,7 @@ bool DFA::accepts(const char *word) const {
         return false;
     }
 
-    return find(finalStates.begin(), finalStates.end(), next) != finalStates.end();
+    return finalStates.contains(next);
 }
 
 void DFA::setAlphabet(const Alphabet &alphabet) {

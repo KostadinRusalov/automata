@@ -1,7 +1,7 @@
 #pragma once
 namespace Algorithm {
-    template<class Iter, class T>
-    Iter find(Iter first, Iter last, const T &value) {
+    template<class InputIt, class T>
+    InputIt find(InputIt first, InputIt last, const T &value) {
         for (auto it = first; it != last; ++it) {
             if (value == *it) {
                 return it;
@@ -10,8 +10,8 @@ namespace Algorithm {
         return last;
     }
 
-    template<class Iter, class UnitaryPredicate>
-    bool allOf(Iter first, Iter last, UnitaryPredicate p) {
+    template<class InputIt, class UnitaryPredicate>
+    bool allOf(InputIt first, InputIt last, UnitaryPredicate p) {
         for (auto it = first; it != last; ++it) {
             if (!p(*it)) {
                 return false;
@@ -25,5 +25,13 @@ namespace Algorithm {
         T copy(rhs);
         rhs = lhs;
         lhs = copy;
+    }
+
+    template<class InputIt, class OutputIt, class UnaryOperation>
+    OutputIt transform(InputIt first, InputIt last, OutputIt out, UnaryOperation op) {
+        for (auto it = first; it != last; ++it, ++out) {
+            *out = op(*it);
+        }
+        return out;
     }
 }
