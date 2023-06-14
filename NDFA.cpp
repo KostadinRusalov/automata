@@ -21,7 +21,37 @@ NDFA::State NDFA::addState() {
 }
 
 void NDFA::removeState(NDFA::State state) {
+    if (!isValid(state)) {
+        throw std::logic_error(INVALID_STATE);
+    }
 
+    initialStates.remove(state);
+    finalStates.remove(state);
+
+    auto subtractOne = [state](State curr) {
+        return curr > state ? curr - 1 : curr;
+    };
+
+    Algorithm::transform(initialStates.begin(), initialStates.end(),
+                         initialStates.begin(), subtractOne);
+    Algorithm::transform(finalStates.begin(), finalStates.end(),
+                         finalStates.begin(), subtractOne);
+
+    transitions.erase(transitions.cbegin() + state);
+
+    for (auto &stateTr: transitions) {
+        for (auto &tr: stateTr) {
+            for (size_t i = 0; i < tr.second.size(); ++i) {
+                auto &sts = tr.second;
+                if (sts[i] == state) {
+                    sts.erase(sts.cbegin() + i);
+                    --i;
+                } else if (sts[i] > state) {
+                    --sts[i];
+                }
+            }
+        }
+    }
 }
 
 NDFA::State NDFA::addInitialState() {
@@ -127,7 +157,7 @@ void NDFA::makeTotal() {
     State dump = addState();
     for (State s = 0; s < transitions.size(); ++s) {
         Vector<Transition> &stateTr = transitions[s];
-        if(stateTr.size() == alphabet.size()) {
+        if (stateTr.size() == alphabet.size()) {
             continue;
         }
         Alphabet leftSymbols(alphabet);
@@ -140,3 +170,34 @@ void NDFA::makeTotal() {
         }
     }
 }
+
+bool NDFA::accepts(NDFA::State from, const char *word) const {
+    if (*word == '\0') {
+        return finalStates.contains(from);
+    }
+
+    auto &stateTr = transitions[from];
+    char next = *word;
+
+    auto tr = Algorithm::findIf(stateTr.begin(), stateTr.end(),
+                                [next](const Transition &tr) {
+                                    return tr.first == next;
+                                });
+    if (tr != stateTr.end()) {
+        for (State state: tr->second) {
+            return accepts(state, ++word);
+        }
+    }
+    return false;
+}
+
+bool NDFA::accepts(const char *word) const {
+    for (auto initial: initialStates) {
+        if (accepts(initial, word)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+

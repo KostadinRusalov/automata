@@ -51,9 +51,5 @@ public:
 
     bool accepts(const char *word) const;
 
-//    void saveToFile();
-//
-//    void loadFromFile();
-
-
+    friend void print(const DFA& dfa);
 };

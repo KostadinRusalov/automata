@@ -20,6 +20,8 @@ private:
 
     State errorState() const;
 
+    bool accepts(State from, const char *word) const;
+
 public:
     // State logic
     State addState();
@@ -47,4 +49,6 @@ public:
     bool isTotal() const;
 
     void makeTotal();
+
+    bool accepts(const char *word) const;
 };

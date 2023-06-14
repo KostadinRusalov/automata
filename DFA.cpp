@@ -22,31 +22,31 @@ DFA::State DFA::errorState() const {
 }
 
 void DFA::removeState(DFA::State state) {
-//    if (!isValid(state)) {
-//        throw std::logic_error(INVALID_STATE);
-//    }
-//    if (state == initialState) {
-//        initialState = transitions.size() - 1;
-//    }
-//
-//    finalStates.remove(state);
-//    Algorithm::transform(finalStates.begin(), finalStates.end(), finalStates.begin(),
-//                         [state](State curr) {
-//                             return curr > state ? curr - 1 : curr;
-//                         });
-//
-//    transitions.erase(transitions.cbegin() + state);
-//    for (auto &stateTr: transitions) {
-//        Vector<Transition> toErase(stateTr.size());
-//        for (auto &tr: stateTr) {
-//            if (tr.second == state) {
-//                toErase.pushBack(tr);
-//            }
-//        }
-//        for (auto &tr: toErase) {
-//
-//        }
-//    }
+    if (!isValid(state)) {
+        throw std::logic_error(INVALID_STATE);
+    }
+
+    if (state == initialState) {
+        initialState = errorState();
+    }
+
+    finalStates.remove(state);
+    Algorithm::transform(finalStates.begin(), finalStates.end(), finalStates.begin(),
+                         [state](State curr) {
+                             return curr > state ? curr - 1 : curr;
+                         });
+
+    transitions.erase(transitions.cbegin() + state);
+    for (auto &stateTr: transitions) {
+        for (size_t i = 0; i < stateTr.size(); ++i) {
+            if (stateTr[i].second == state) {
+                stateTr.erase(stateTr.cbegin() + i);
+                --i;
+            } else if (stateTr[i].second > state) {
+                --stateTr[i].second;
+            }
+        }
+    }
 }
 
 DFA::State DFA::addInitialState() {
