@@ -11,7 +11,6 @@ public:
     typedef Pair<char, State> Transition;
     typedef Vector<Vector<Transition>> TransitionCollection;
 protected:
-    Alphabet alphabet;
     State initialState;
     StateCollection finalStates;
     TransitionCollection transitions;
@@ -26,7 +25,6 @@ private:
     State errorState() const;
 
 public:
-
     State addState();
 
     void removeState(State state);
@@ -40,14 +38,6 @@ public:
     void makeFinalState(State state);
 
     void removeFinalState(State state);
-
-    void setAlphabet(const Alphabet &alphabet);
-
-    void setAlphabet(Alphabet &&alphabet);
-
-    void addSymbol(char s);
-
-    void removeSymbol(char s);
 
     void addTransition(State from, char with, State to);
 

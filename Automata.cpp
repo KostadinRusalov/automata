@@ -1,7 +1,4 @@
-#pragma once
-
 #include "Automata.h"
-
 
 void Automata::setAlphabet(const Alphabet &alphabet) {
     this->alphabet = alphabet;
