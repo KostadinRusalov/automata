@@ -198,8 +198,11 @@ bool NDFA::accepts(const char *word) const {
     int sum = 0;
     for (State initial: initialStates) {
         sum += accepts(initial, word);
+        if (sum == 1) {
+            return true;
+        }
     }
-    return sum >= 1;
+    return false;
 }
 
 
