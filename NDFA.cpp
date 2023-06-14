@@ -119,6 +119,24 @@ bool NDFA::isTotal() const {
                             });
 }
 
+void NDFA::makeTotal() {
+    if (isTotal()) {
+        return;
+    }
 
+    State dump = addState();
+    for (State s = 0; s < transitions.size(); ++s) {
+        Vector<Transition> &stateTr = transitions[s];
+        if(stateTr.size() == alphabet.size()) {
+            continue;
+        }
+        Alphabet leftSymbols(alphabet);
+        for (auto &tr: stateTr) {
+            leftSymbols.remove(tr.first);
+        }
 
-
+        for (char symbol: leftSymbols) {
+            addTransition(s, symbol, dump);
+        }
+    }
+}
