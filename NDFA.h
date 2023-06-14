@@ -5,7 +5,7 @@
 
 class NDFA : public Automata {
 public:
-    typedef Pair<char, OrderedSet<State>> Transition;
+    typedef Pair<char, Set<State>> Transition;
     typedef Vector<Vector<Transition>> TransitionCollection;
 
     friend class NDFAFactory;
@@ -59,6 +59,7 @@ public:
     NDFA &operator|=(const NDFA &other);
 
     NDFA &operator*=(const NDFA &other);
+
     NDFA operator*();
 
     friend void print(const NDFA &ndfa);

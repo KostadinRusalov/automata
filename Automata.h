@@ -1,12 +1,12 @@
 #pragma once
 
-#include "MyStructures/OrderedSet/OrderedSet.hpp"
+#include "MyStructures/Set/Set.hpp"
 
 class Automata {
 public:
-    typedef OrderedSet<char> Alphabet;
+    typedef Set<char> Alphabet;
     typedef unsigned State;
-    typedef OrderedSet<State> StateCollection;
+    typedef Set<State> StateCollection;
 
 protected:
     Alphabet alphabet;

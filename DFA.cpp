@@ -31,10 +31,13 @@ void DFA::removeState(DFA::State state) {
     }
 
     finalStates.remove(state);
-    Algorithm::transform(finalStates.begin(), finalStates.end(), finalStates.begin(),
-                         [state](State curr) {
-                             return curr > state ? curr - 1 : curr;
-                         });
+
+    kstd::transform(finalStates.begin(), finalStates.end(),
+                    finalStates.begin(),
+                    [state](State curr) {
+                        return curr > state ? curr - 1 : curr;
+                    }
+    );
 
     transitions.erase(transitions.cbegin() + state);
     for (auto &stateTr: transitions) {
@@ -92,10 +95,10 @@ void DFA::addTransition(DFA::State from, char with, DFA::State to) {
     }
 
     Vector<Transition> &stateTr = transitions[from];
-    auto tr = Algorithm::findIf(stateTr.begin(), stateTr.end(),
-                                [with](const Transition &tr) {
-                                    return tr.first == with;
-                                });
+    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
+                           [with](const Transition &tr) {
+                               return tr.first == with;
+                           });
     if (tr == stateTr.end()) {
         stateTr.pushBack({with, to});
     } else {
@@ -114,7 +117,7 @@ void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
 
     Vector<Transition> &st = transitions[from];
     Transition transition(with, to);
-    auto pos = Algorithm::find(st.cbegin(), st.cend(), transition);
+    auto pos = kstd::find(st.cbegin(), st.cend(), transition);
 
     if (pos != st.cend()) {
         st.erase(pos);
@@ -122,10 +125,10 @@ void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
 }
 
 bool DFA::isTotal() const {
-    return Algorithm::allOf(transitions.begin(), transitions.end(),
-                            [&](const Vector<Transition> &tr) {
-                                return tr.size() == alphabet.size();
-                            });
+    return kstd::allOf(transitions.begin(), transitions.end(),
+                       [&](const Vector<Transition> &tr) {
+                           return tr.size() == alphabet.size();
+                       });
 }
 
 void DFA::makeTotal() {

@@ -32,9 +32,9 @@ void NDFA::removeState(NDFA::State state) {
         return curr > state ? curr - 1 : curr;
     };
 
-    Algorithm::transform(initialStates.begin(), initialStates.end(),
+    kstd::transform(initialStates.begin(), initialStates.end(),
                          initialStates.begin(), subtractOne);
-    Algorithm::transform(finalStates.begin(), finalStates.end(),
+    kstd::transform(finalStates.begin(), finalStates.end(),
                          finalStates.begin(), subtractOne);
 
     transitions.erase(transitions.cbegin() + state);
@@ -42,7 +42,7 @@ void NDFA::removeState(NDFA::State state) {
     for (auto &stateTr: transitions) {
         for (auto &tr: stateTr) {
             tr.second.remove(state);
-            Algorithm::transform(tr.second.begin(), tr.second.end(),
+            kstd::transform(tr.second.begin(), tr.second.end(),
                                  tr.second.begin(), subtractOne);
         }
     }
@@ -101,7 +101,7 @@ void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
 //    }
 
     auto &stateTr = transitions[from];
-    auto tr = Algorithm::findIf(stateTr.begin(), stateTr.end(),
+    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
                                 [with](const Transition &tr) {
                                     return tr.first == with;
                                 });
@@ -122,7 +122,7 @@ void NDFA::removeTransition(NDFA::State from, char with, NDFA::State to) {
     }
 
     auto &stateTr = transitions[from];
-    auto tr = Algorithm::findIf(stateTr.begin(), stateTr.end(),
+    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
                                 [with](const Transition &tr) {
                                     return tr.first == with;
                                 });
@@ -133,7 +133,7 @@ void NDFA::removeTransition(NDFA::State from, char with, NDFA::State to) {
 }
 
 bool NDFA::isTotal() const {
-    return Algorithm::allOf(transitions.begin(), transitions.end(),
+    return kstd::allOf(transitions.begin(), transitions.end(),
                             [&](const Vector<Transition> &tr) {
                                 return tr.size() == alphabet.size();
                             });
@@ -169,7 +169,7 @@ int NDFA::accepts(NDFA::State from, const char *word) const {
     auto &stateTr = transitions[from];
     char next = *word;
 
-    auto tr = Algorithm::findIf(stateTr.begin(), stateTr.end(),
+    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
                                 [next](const Transition &tr) {
                                     return tr.first == next;
                                 });
@@ -178,6 +178,9 @@ int NDFA::accepts(NDFA::State from, const char *word) const {
         ++word;
         for (State state: tr->second) {
             sum += accepts(state, word);
+            if (sum >= 1) {
+                return sum;
+            }
         }
         return sum;
     }
@@ -250,7 +253,7 @@ NDFA &NDFA::operator*=(const NDFA &other) {
         }
     }
 
-    auto it = Algorithm::findIf(other.initialStates.begin(),
+    auto it = kstd::findIf(other.initialStates.begin(),
                                 other.initialStates.end(),
                                 [&other](State state) {
                                     return other.finalStates.contains(state);

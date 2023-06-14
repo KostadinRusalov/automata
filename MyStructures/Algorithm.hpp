@@ -1,5 +1,6 @@
 #pragma once
-namespace Algorithm {
+
+namespace kstd {
     template<class InputIt, class T>
     InputIt find(InputIt first, InputIt last, const T &value) {
         for (auto it = first; it != last; ++it) {
@@ -9,8 +10,9 @@ namespace Algorithm {
         }
         return last;
     }
+
     template<class InputIt, class UnitaryPredicate>
-    InputIt findIf(InputIt first, InputIt last,UnitaryPredicate p) {
+    InputIt findIf(InputIt first, InputIt last, UnitaryPredicate p) {
         for (auto it = first; it != last; ++it) {
             if (p(*it)) {
                 return it;

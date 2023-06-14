@@ -2,14 +2,12 @@
 
 #include "Automata.h"
 #include "MyStructures/Pair/Pair.hpp"
-#include "MyStructures/String/String.h"
 
 class DFA : public Automata {
 public:
-    typedef unsigned State;
-    typedef OrderedSet<State> StateCollection;
     typedef Pair<char, State> Transition;
     typedef Vector<Vector<Transition>> TransitionCollection;
+
 protected:
     State initialState;
     StateCollection finalStates;
