@@ -20,7 +20,7 @@ private:
 
     State errorState() const;
 
-    bool accepts(State from, const char *word) const;
+    int accepts(State from, const char *word) const;
 
 public:
     // State logic

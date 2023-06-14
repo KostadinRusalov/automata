@@ -171,7 +171,7 @@ void NDFA::makeTotal() {
     }
 }
 
-bool NDFA::accepts(NDFA::State from, const char *word) const {
+int NDFA::accepts(NDFA::State from, const char *word) const {
     if (*word == '\0') {
         return finalStates.contains(from);
     }
@@ -184,20 +184,22 @@ bool NDFA::accepts(NDFA::State from, const char *word) const {
                                     return tr.first == next;
                                 });
     if (tr != stateTr.end()) {
+        int sum = 0;
+        ++word;
         for (State state: tr->second) {
-            return accepts(state, ++word);
+            sum += accepts(state, word);
         }
+        return sum;
     }
-    return false;
+    return 0;
 }
 
 bool NDFA::accepts(const char *word) const {
-    for (auto initial: initialStates) {
-        if (accepts(initial, word)) {
-            return true;
-        }
+    int sum = 0;
+    for (State initial: initialStates) {
+        sum += accepts(initial, word);
     }
-    return false;
+    return sum >= 1;
 }
 
 
