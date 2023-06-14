@@ -1,4 +1,5 @@
 #include "NDFA.h"
+#include "SubtractOneAfter.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet!";
@@ -20,136 +21,117 @@ NDFA::State NDFA::addState() {
     return lastState();
 }
 
-void NDFA::removeState(NDFA::State state) {
+void NDFA::validate(State state) const {
     if (!isValid(state)) {
         throw std::logic_error(INVALID_STATE);
     }
+}
 
-    initialStates.remove(state);
-    finalStates.remove(state);
+namespace {
+    template<class T, class Collection>
+    void removeAndShift(T element, Collection &collection) {
+        collection.remove(element);
+        kstd::transform(collection.begin(), collection.end(),
+                        collection.begin(), SubtractOneAfter<T>(element));
+    }
+}
 
-    auto subtractOne = [state](State curr) {
-        return curr > state ? curr - 1 : curr;
-    };
+void NDFA::removeState(NDFA::State state) {
+    validate(state);
 
-    kstd::transform(initialStates.begin(), initialStates.end(),
-                         initialStates.begin(), subtractOne);
-    kstd::transform(finalStates.begin(), finalStates.end(),
-                         finalStates.begin(), subtractOne);
+    removeAndShift(state, initialStates);
+    removeAndShift(state, finalStates);
 
     transitions.erase(transitions.cbegin() + state);
-
     for (auto &stateTr: transitions) {
         for (auto &tr: stateTr) {
-            tr.second.remove(state);
-            kstd::transform(tr.second.begin(), tr.second.end(),
-                                 tr.second.begin(), subtractOne);
+            removeAndShift(state, tr.second);
         }
     }
 }
 
 NDFA::State NDFA::addInitialState() {
     State initial = addState();
-
     initialStates.add(initial);
     return initial;
 }
 
 void NDFA::makeInitialState(Automata::State state) {
-    if (!isValid(state)) {
-        throw std::logic_error(INVALID_STATE);
-    }
+    validate(state);
     initialStates.add(state);
 }
 
 void NDFA::removeInitialState(NDFA::State state) {
-    if (!isValid(state)) {
-        throw std::logic_error(INVALID_STATE);
-    }
+    validate(state);
     initialStates.remove(state);
 }
 
-
 NDFA::State NDFA::addFinalState() {
     State final = addState();
-
     finalStates.add(final);
     return final;
 }
 
 void NDFA::makeFinalState(NDFA::State state) {
-    if (!isValid(state)) {
-        throw std::logic_error(INVALID_STATE);
-    }
+    validate(state);
     finalStates.add(state);
 }
 
 void NDFA::removeFinalState(NDFA::State state) {
-    if (!isValid(state)) {
-        throw std::logic_error(INVALID_STATE);
-    }
+    validate(state);
     finalStates.remove(state);
 }
 
-void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
-//    if (!isValid(from) || !isValid(to)) {
-//        throw std::logic_error(INVALID_STATE);
-//    }
-//
-//    if (!alphabet.contains(with)) {
-//        throw std::logic_error(INVALID_SYMBOL);
-//    }
+typename Vector<NDFA::Transition>::const_iterator
+NDFA::findTransition(const Vector<Transition> &stateTr, char with) {
+    return kstd::findIf(stateTr.begin(), stateTr.end(),
+                        [with](const Transition &tr) {
+                            return tr.first == with;
+                        });
+}
 
+void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
+    // TODO validation
     auto &stateTr = transitions[from];
-    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
-                                [with](const Transition &tr) {
-                                    return tr.first == with;
-                                });
+    // TODO const_iterator to iterator
+    auto tr = stateTr.begin() + (findTransition(stateTr, with) - stateTr.cbegin());
+
     if (tr == stateTr.end()) {
-        stateTr.pushBack({with, {{to}}});
+        stateTr.pushBack({with, {to}});
     } else {
         tr->second.add(to);
     }
 }
 
 void NDFA::removeTransition(NDFA::State from, char with, NDFA::State to) {
-    if (!isValid(from) || !isValid(to)) {
-        throw std::logic_error(INVALID_STATE);
-    }
-
-    if (!alphabet.contains(with)) {
-        throw std::logic_error(INVALID_SYMBOL);
-    }
-
+    // TODO validation
     auto &stateTr = transitions[from];
-    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
-                                [with](const Transition &tr) {
-                                    return tr.first == with;
-                                });
-    if (tr == stateTr.end()) {
-        return;
+    auto tr = stateTr.begin() + (findTransition(stateTr, with) - stateTr.cbegin());
+
+    if (tr != stateTr.end()) {
+        tr->second.remove(to);
     }
-    tr->second.remove(to);
 }
 
 bool NDFA::isTotal() const {
-    return kstd::allOf(transitions.begin(), transitions.end(),
-                            [&](const Vector<Transition> &tr) {
-                                return tr.size() == alphabet.size();
-                            });
+    return kstd::allOf(
+            transitions.begin(), transitions.end(),
+            [&](const Vector<Transition> &tr) {
+                return tr.size() == alphabet.size();
+            }
+    );
 }
 
 void NDFA::makeTotal() {
-    if (isTotal()) {
-        return;
-    }
+    if (isTotal()) { return; }
 
     State dump = addState();
     for (State s = 0; s < transitions.size(); ++s) {
-        Vector<Transition> &stateTr = transitions[s];
+        auto &stateTr = transitions[s];
         if (stateTr.size() == alphabet.size()) {
             continue;
         }
+
         Alphabet leftSymbols(alphabet);
         for (auto &tr: stateTr) {
             leftSymbols.remove(tr.first);
@@ -168,23 +150,21 @@ int NDFA::accepts(NDFA::State from, const char *word) const {
 
     auto &stateTr = transitions[from];
     char next = *word;
+    auto tr = findTransition(stateTr, next);
 
-    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
-                                [next](const Transition &tr) {
-                                    return tr.first == next;
-                                });
-    if (tr != stateTr.end()) {
-        int sum = 0;
-        ++word;
-        for (State state: tr->second) {
-            sum += accepts(state, word);
-            if (sum >= 1) {
-                return sum;
-            }
-        }
-        return sum;
+    if (tr == stateTr.end()) {
+        return 0;
     }
-    return 0;
+
+    int sum = 0;
+    ++word;
+    for (State state: tr->second) {
+        sum += accepts(state, word);
+        if (sum >= 1) {
+            return sum;
+        }
+    }
+    return sum;
 }
 
 bool NDFA::accepts(const char *word) const {
@@ -254,10 +234,10 @@ NDFA &NDFA::operator*=(const NDFA &other) {
     }
 
     auto it = kstd::findIf(other.initialStates.begin(),
-                                other.initialStates.end(),
-                                [&other](State state) {
-                                    return other.finalStates.contains(state);
-                                });
+                           other.initialStates.end(),
+                           [&other](State state) {
+                               return other.finalStates.contains(state);
+                           });
 
     if (it == other.initialStates.end()) {
         for (auto final: finalStates) {

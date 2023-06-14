@@ -31,12 +31,12 @@ void DFA::removeState(DFA::State state) {
     }
 
     finalStates.remove(state);
-
-    kstd::transform(finalStates.begin(), finalStates.end(),
-                    finalStates.begin(),
-                    [state](State curr) {
-                        return curr > state ? curr - 1 : curr;
-                    }
+    kstd::transform(
+            finalStates.begin(), finalStates.end(),
+            finalStates.begin(),
+            [state](State curr) {
+                return curr > state ? curr - 1 : curr;
+            }
     );
 
     transitions.erase(transitions.cbegin() + state);

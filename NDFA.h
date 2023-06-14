@@ -22,6 +22,10 @@ private:
 
     State errorState() const;
 
+    void validate(State state) const;
+
+    static Vector<Transition>::const_iterator findTransition(const Vector<Transition> &stateTr, char with);
+
     int accepts(State from, const char *word) const;
 
     NDFA &operator+=(const NDFA &other);
