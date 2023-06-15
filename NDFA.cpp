@@ -75,16 +75,17 @@ void NDFA::removeFinalState(NDFA::State state) {
 
 typename Vector<NDFA::Transition>::const_iterator
 NDFA::findTransition(const Vector<Transition> &stateTr, char with) {
-    return kstd::findIf(stateTr.begin(), stateTr.end(),
-                        [with](const Transition &tr) {
-                            return tr.first == with;
-                        });
+    return kstd::findIf(
+            stateTr.begin(), stateTr.end(),
+            [with](const Transition &tr) {
+                return tr.first == with;
+            }
+    );
 }
 
 void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
     // TODO validation
     auto &stateTr = transitions[from];
-    // TODO const_iterator to iterator
     auto tr = stateTr.begin() + (findTransition(stateTr, with) - stateTr.cbegin());
 
     if (tr == stateTr.end()) {
@@ -101,10 +102,12 @@ void NDFA::removeTransition(NDFA::State from, char with, NDFA::State to) {
 
     if (tr != stateTr.end()) {
         tr->second.remove(to);
+        // TODO delete {a, {}} ?
     }
 }
 
 bool NDFA::isTotal() const {
+    // TODO {a, {}} ?
     return kstd::allOf(
             transitions.begin(), transitions.end(),
             [&](const Vector<Transition> &tr) {
@@ -117,8 +120,8 @@ void NDFA::makeTotal() {
     if (isTotal()) { return; }
 
     State dump = addState();
-    for (State s = 0; s < transitions.size(); ++s) {
-        auto &stateTr = transitions[s];
+    for (State q = 0; q < transitions.size(); ++q) {
+        auto &stateTr = transitions[q];
         if (stateTr.size() == alphabet.size()) {
             continue;
         }
@@ -129,7 +132,7 @@ void NDFA::makeTotal() {
         }
 
         for (char symbol: leftSymbols) {
-            addTransition(s, symbol, dump);
+            addTransition(q, symbol, dump);
         }
     }
 }

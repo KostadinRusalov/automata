@@ -39,12 +39,12 @@ void DFA::removeState(DFA::State state) {
 
     transitions.erase(transitions.cbegin() + state);
     for (auto &stateTr: transitions) {
-        for (size_t i = 0; i < stateTr.size(); ++i) {
-            if (stateTr[i].second == state) {
-                stateTr.erase(stateTr.cbegin() + i);
-                --i;
-            } else if (stateTr[i].second > state) {
-                --stateTr[i].second;
+        for (size_t to = 0; to < stateTr.size(); ++to) {
+            if (stateTr[to].second == state) {
+                stateTr.erase(stateTr.cbegin() + to);
+                --to;
+            } else if (stateTr[to].second > state) {
+                --stateTr[to].second;
             }
         }
     }
@@ -80,11 +80,13 @@ void DFA::removeFinalState(DFA::State state) {
 void DFA::addTransition(DFA::State from, char with, DFA::State to) {
     // TODO validation
 
-    Vector<Transition> &stateTr = transitions[from];
-    auto tr = kstd::findIf(stateTr.begin(), stateTr.end(),
-                           [with](const Transition &tr) {
-                               return tr.first == with;
-                           });
+    auto &stateTr = transitions[from];
+    auto tr = kstd::findIf(
+            stateTr.begin(), stateTr.end(),
+            [with](const Transition &tr) {
+                return tr.first == with;
+            }
+    );
     if (tr == stateTr.end()) {
         stateTr.pushBack({with, to});
     } else {
@@ -101,7 +103,7 @@ void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
         throw std::logic_error(INVALID_SYMBOL);
     }
 
-    Vector<Transition> &st = transitions[from];
+    auto &st = transitions[from];
     Transition transition(with, to);
     auto pos = kstd::find(st.cbegin(), st.cend(), transition);
 
@@ -123,8 +125,8 @@ void DFA::makeTotal() {
     if (isTotal()) { return; }
 
     State dump = addState();
-    for (State s = 0; s < transitions.size(); ++s) {
-        Vector<Transition> &stateTr = transitions[s];
+    for (State q = 0; q < transitions.size(); ++q) {
+        auto &stateTr = transitions[q];
         if (stateTr.size() == alphabet.size()) {
             continue;
         }
@@ -135,16 +137,15 @@ void DFA::makeTotal() {
         }
 
         for (char symbol: leftSymbols) {
-            addTransition(s, symbol, dump);
+            addTransition(q, symbol, dump);
         }
     }
 }
 
 DFA::State DFA::nextState(DFA::State current, char s) const {
-    auto &stateTr = transitions[current];
-    for (auto &tran: stateTr) {
-        if (tran.first == s) {
-            return tran.second;
+    for (auto &tr: transitions[current]) {
+        if (tr.first == s) {
+            return tr.second;
         }
     }
     return errorState();
@@ -158,9 +159,6 @@ bool DFA::accepts(const char *word) const {
         ++word;
     }
 
-    if (next == errorState()) {
-        return false;
-    }
-
-    return finalStates.contains(next);
+    return next != errorState() &&
+           finalStates.contains(next);
 }
