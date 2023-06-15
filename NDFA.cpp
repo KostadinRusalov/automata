@@ -106,16 +106,19 @@ void NDFA::removeTransition(NDFA::State from, char with, NDFA::State to) {
     validate(with);
 
     auto &stateTr = transitions[from];
-    auto tr = stateTr.begin() + (findTransition(stateTr, with) - stateTr.cbegin());
+    auto constTr = findTransition(stateTr, with);
+    auto tr = stateTr.begin() + (constTr - stateTr.cbegin());
 
     if (tr != stateTr.end()) {
-        tr->second.remove(to);
-        // TODO delete {a, {}} ?
+        if (tr->second.size() >= 2) {
+            tr->second.remove(to);
+        } else {
+            stateTr.erase(constTr);
+        }
     }
 }
 
 bool NDFA::isTotal() const {
-    // TODO {a, {}} ?
     return kstd::allOf(
             transitions.begin(), transitions.end(),
             [&](const Vector<Transition> &tr) {
