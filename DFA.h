@@ -14,8 +14,6 @@ protected:
     TransitionCollection transitions;
 
 private:
-    bool isValid(State state) const;
-
     State lastState() const;
 
     State nextState(State current, char s) const;
@@ -23,6 +21,8 @@ private:
     State errorState() const;
 
     void validate(State state) const;
+
+    void validate(char s) const;
 
 public:
     State addState();

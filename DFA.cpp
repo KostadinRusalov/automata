@@ -5,10 +5,6 @@
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet!";
 
-bool DFA::isValid(DFA::State state) const {
-    return state < transitions.size();
-}
-
 DFA::State DFA::lastState() const {
     return transitions.size() - 1;
 }
@@ -23,7 +19,13 @@ DFA::State DFA::errorState() const {
 }
 
 void DFA::validate(State state) const {
-    if (!isValid(state)) {
+    if (state >= transitions.size()) {
+        throw std::logic_error(INVALID_STATE);
+    }
+}
+
+void DFA::validate(char s) const {
+    if (!alphabet.contains(s)) {
         throw std::logic_error(INVALID_STATE);
     }
 }
@@ -78,7 +80,9 @@ void DFA::removeFinalState(DFA::State state) {
 }
 
 void DFA::addTransition(DFA::State from, char with, DFA::State to) {
-    // TODO validation
+    validate(from);
+    validate(to);
+    validate(with);
 
     auto &stateTr = transitions[from];
     auto tr = kstd::findIf(
@@ -95,9 +99,9 @@ void DFA::addTransition(DFA::State from, char with, DFA::State to) {
 }
 
 void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
-    if (!isValid(from) || !isValid(to)) {
-        throw std::logic_error(INVALID_STATE);
-    }
+    validate(from);
+    validate(to);
+    validate(with);
 
     if (!alphabet.contains(with)) {
         throw std::logic_error(INVALID_SYMBOL);
