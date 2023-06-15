@@ -10,6 +10,7 @@ public:
     typedef typename Vector<T>::size_type size_type;
     typedef typename Vector<T>::iterator iterator;
     typedef typename Vector<T>::const_iterator const_iterator;
+
 private:
     Vector<T> elements;
 public:
@@ -52,6 +53,8 @@ public:
     const_iterator end() const;
 
     const_iterator cend() const;
+
+    bool intersectsWith(const Set<T> &other) const;
 };
 
 template<class T>
@@ -160,4 +163,13 @@ typename Set<T>::const_iterator Set<T>::end() const {
 template<class T>
 typename Set<T>::const_iterator Set<T>::cend() const {
     return elements.cend();
+}
+
+template<class T>
+bool Set<T>::intersectsWith(const Set<T> &other) const {
+    return kstd::anyOf(begin(), end(),
+                       [&other](const T &el) {
+                           return other.contains(el);
+                       }
+    );
 }

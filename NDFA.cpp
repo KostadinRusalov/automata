@@ -229,15 +229,7 @@ NDFA &NDFA::operator*=(const NDFA &other) {
         }
     }
 
-    bool hasFinalInitial = kstd::anyOf(
-            other.initialStates.begin(),
-            other.initialStates.end(),
-            [&other](State state) {
-                return other.finalStates.contains(state);
-            }
-    );
-
-    if (!hasFinalInitial) {
+    if (other.initialStates.intersectsWith(other.finalStates)) {
         for (auto final: finalStates) {
             finalStates.remove(final);
         }

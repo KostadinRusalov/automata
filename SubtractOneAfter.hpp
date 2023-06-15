@@ -1,26 +1,26 @@
 #pragma once
 
-template<class Num>
-class SubtractOneAfter {
+template<size_t N, class Num>
+class Subtract {
 private:
     Num after;
 public:
-    explicit SubtractOneAfter(Num after);
+    explicit Subtract(const Num &after);
 
-    Num operator()(Num num);
+    Num operator()(const Num &num);
 };
 
-template<class Num>
-SubtractOneAfter<Num>::SubtractOneAfter(Num after) : after(after) {}
+template<size_t N, class Num>
+Subtract<N, Num>::Subtract(const Num &after) : after(after) {}
 
-template<class Num>
-Num SubtractOneAfter<Num>::operator()(Num num) {
-    return num > after ? --num : num;
+template<size_t N, class Num>
+Num Subtract<N, Num>::operator()(const Num &num) {
+    return num > after ? num - N : num;
 }
 
 template<class T, class Collection>
-void removeAndShift(T element, Collection &collection) {
+void removeAndShift(const T &element, Collection &collection) {
     collection.remove(element);
     kstd::transform(collection.begin(), collection.end(),
-                    collection.begin(), SubtractOneAfter<T>(element));
+                    collection.begin(), Subtract<1, T>(element));
 }
