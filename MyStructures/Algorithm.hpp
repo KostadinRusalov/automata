@@ -31,6 +31,17 @@ namespace kstd {
         return true;
     }
 
+    template<class InputIt, class UnitaryPredicate>
+    bool anyOf(InputIt first, InputIt last, UnitaryPredicate p) {
+        for (auto it = first; it != last; ++it) {
+            if (p(*it)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     template<class T>
     void swap(T &rhs, T &lhs) {
         T copy(rhs);
