@@ -2,6 +2,7 @@
 
 #include "Automata.h"
 #include "MyStructures/Pair/Pair.hpp"
+#include "MyStructures/Bitset/Bitset.h"
 
 class NDFA : public Automata {
 public:
@@ -33,6 +34,8 @@ private:
 
     void copyTransitions(State state, const Vector<Transition> &stateTr, State offsetIdx);
 
+    Bitset unreachableStates() const;
+
 public:
     // State logic
     State addState();
@@ -60,6 +63,8 @@ public:
     bool isTotal() const;
 
     void makeTotal();
+
+    void removeUnreachableStates();
 
     bool accepts(const char *word) const;
 

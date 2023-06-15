@@ -170,6 +170,27 @@ int NDFA::accepts(NDFA::State from, const char *word) const {
     return successPaths;
 }
 
+Bitset NDFA::unreachableStates() const {
+    Bitset reachable(transitions.size());
+
+    reachable.add(initialStates);
+    for (auto &stateTr: transitions) {
+        for (auto &tr: stateTr) {
+            reachable.add(tr.second);
+        }
+    }
+    return ~reachable;
+}
+
+void NDFA::removeUnreachableStates() {
+    Bitset unreachable = unreachableStates();
+    for (State s = 0; s < unreachable.capacity(); ++s) {
+        if (unreachable.contains(s)) {
+            removeState(s);
+        }
+    }
+}
+
 bool NDFA::accepts(const char *word) const {
     int successPaths = 0;
     for (State initial: initialStates) {
@@ -229,7 +250,7 @@ NDFA &NDFA::operator*=(const NDFA &other) {
         }
     }
 
-    if (other.initialStates.intersectsWith(other.finalStates)) {
+    if (!other.initialStates.intersectsWith(other.finalStates)) {
         for (auto final: finalStates) {
             finalStates.remove(final);
         }
@@ -238,6 +259,8 @@ NDFA &NDFA::operator*=(const NDFA &other) {
     for (auto final: other.finalStates) {
         makeFinalState(offset(final, offsetIdx));
     }
+
+    removeUnreachableStates();
     return *this;
 }
 
@@ -249,11 +272,14 @@ NDFA NDFA::operator*() {
 
     for (auto final: n.finalStates) {
         for (auto initial: initialStates) {
-            copyTransitions(final, transitions[initial], 0);
+            n.copyTransitions(final, transitions[initial], 0);
         }
     }
+
+    n.removeUnreachableStates();
     return n;
 }
+
 
 NDFA operator+(const NDFA &rhs, const NDFA &lhs) {
     NDFA n(rhs);
