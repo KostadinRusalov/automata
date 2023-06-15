@@ -16,13 +16,14 @@ protected:
     TransitionCollection transitions;
 
 private:
-    bool isValid(State state) const;
 
     State lastState() const;
 
     State errorState() const;
 
     void validate(State state) const;
+
+    void validate(char s) const;
 
     static Vector<Transition>::const_iterator findTransition(const Vector<Transition> &stateTr, char with);
 

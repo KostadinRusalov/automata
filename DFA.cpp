@@ -23,13 +23,11 @@ void DFA::validate(State state) const {
         throw std::logic_error(INVALID_STATE);
     }
 }
-
 void DFA::validate(char s) const {
     if (!alphabet.contains(s)) {
         throw std::logic_error(INVALID_STATE);
     }
 }
-
 void DFA::removeState(DFA::State state) {
     validate(state);
 

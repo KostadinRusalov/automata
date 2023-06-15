@@ -4,10 +4,6 @@
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet!";
 
-bool NDFA::isValid(NDFA::State state) const {
-    return state < transitions.size();
-}
-
 NDFA::State NDFA::lastState() const {
     return transitions.size() - 1;
 }
@@ -21,8 +17,14 @@ NDFA::State NDFA::addState() {
     return lastState();
 }
 
+void NDFA::validate(char s) const {
+    if (!alphabet.contains(s)) {
+        throw std::logic_error(INVALID_STATE);
+    }
+}
+
 void NDFA::validate(State state) const {
-    if (!isValid(state)) {
+    if (state >= transitions.size()) {
         throw std::logic_error(INVALID_STATE);
     }
 }
@@ -84,7 +86,10 @@ NDFA::findTransition(const Vector<Transition> &stateTr, char with) {
 }
 
 void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
-    // TODO validation
+    validate(from);
+    validate(to);
+    validate(with);
+
     auto &stateTr = transitions[from];
     auto tr = stateTr.begin() + (findTransition(stateTr, with) - stateTr.cbegin());
 
@@ -96,7 +101,10 @@ void NDFA::addTransition(NDFA::State from, char with, NDFA::State to) {
 }
 
 void NDFA::removeTransition(NDFA::State from, char with, NDFA::State to) {
-    // TODO validation
+    validate(from);
+    validate(to);
+    validate(with);
+
     auto &stateTr = transitions[from];
     auto tr = stateTr.begin() + (findTransition(stateTr, with) - stateTr.cbegin());
 
