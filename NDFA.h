@@ -29,7 +29,9 @@ private:
 
     int accepts(State from, const char *word) const;
 
-    NDFA &operator+=(const NDFA &other);
+    static State offset(State state, State offsetIdx);
+
+    void copyTransitions(State state, const Vector<Transition> &stateTr, State offsetIdx);
 
 public:
     // State logic
@@ -61,6 +63,8 @@ public:
 
     bool accepts(const char *word) const;
 
+    NDFA &operator+=(const NDFA &other);
+
     NDFA &operator|=(const NDFA &other);
 
     NDFA &operator*=(const NDFA &other);
@@ -69,6 +73,8 @@ public:
 
     friend void print(const NDFA &ndfa);
 };
+
+NDFA operator+(const NDFA &rhs, const NDFA &lhs);
 
 NDFA operator|(const NDFA &rhs, const NDFA &lhs);
 
