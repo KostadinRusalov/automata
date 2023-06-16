@@ -10,17 +10,18 @@ public:
     typedef CState<T> CState;
     typedef Vector<CState> CStateCollection;
 
+    typedef typename CStateCollection::const_iterator const_iterator;
+
 protected:
     CStateCollection cStates;
 
-    State findState(const CState &cState) const;
 
 public:
-    State addState() override = delete;
+    State addState() = delete;
 
-    State addInitialState() override = delete;
+    State addInitialState() = delete;
 
-    State addFinalState() override = delete;
+    State addFinalState() = delete;
 
     State addState(const CState &cState);
 
@@ -28,29 +29,35 @@ public:
 
     void removeState(State state);
 
-    void addInitialState(const CState &cState);
+    State addInitialState(const CState &cState);
 
-    void addInitialState(CState &&cState);
+    State addInitialState(CState &&cState);
 
-    void addFinalState(const CState &cState);
+    State addFinalState(const CState &cState);
 
-    void addFinalState(CState &&cState);
+    State addFinalState(CState &&cState);
 
     void addTransition(const CState &from, char with, const CState &to);
 
     void removeTransition(const CState &from, char with, const CState &to);
+
+    State findState(const CState &cState) const;
+
+    const_iterator findCState(State state) const;
 };
 
 template<class T>
-Automata::State CDFA<T>::addState(const CState &cState) {
-    DFA::addState();
+DFA::State CDFA<T>::addState(const CState &cState) {
     cStates.pushBack(cState);
+    return DFA::addState();
+
 }
 
 template<class T>
-Automata::State CDFA<T>::addState(CState &&cState) {
-    DFA::addState();
+DFA::State CDFA<T>::addState(CState &&cState) {
     cStates.pushBack(std::move(cState));
+    return DFA::addState();
+
 }
 
 template<class T>
@@ -60,34 +67,29 @@ void CDFA<T>::removeState(DFA::State state) {
 }
 
 template<class T>
-void CDFA<T>::addInitialState(const CState &cState) {
-    DFA::addInitialState();
+DFA::State CDFA<T>::addInitialState(const CState &cState) {
     cStates.pushBack(cState);
+    return DFA::addInitialState();
 }
 
 template<class T>
-void CDFA<T>::addInitialState(CState &&cState) {
-    DFA::addInitialState();
+DFA::State CDFA<T>::addInitialState(CState &&cState) {
     cStates.pushBack(std::move(cState));
+    return DFA::addInitialState();
 }
 
 template<class T>
-void CDFA<T>::addFinalState(const CState &cState) {
-    DFA::addFinalState();
+DFA::State CDFA<T>::addFinalState(const CState &cState) {
     cStates.pushBack(cState);
+    return DFA::addFinalState();
 }
 
 template<class T>
-void CDFA<T>::addFinalState(CState &&cState) {
-    DFA::addFinalState();
+DFA::State CDFA<T>::addFinalState(CState &&cState) {
     cStates.pushBack(std::move(cState));
+    return DFA::addFinalState();
 }
 
-template<class T>
-DFA::State CDFA<T>::findState(const CState &cState) const {
-    auto it = kstd::find(cStates.begin(), cStates.end(), cStates);
-    return it - cStates.begin();
-}
 
 template<class T>
 void CDFA<T>::addTransition(const CState &from, char with, const CState &to) {
@@ -101,4 +103,18 @@ void CDFA<T>::removeTransition(const CState &from, char with, const CState &to) 
     auto from_ = findState(from);
     auto to_ = findState(to);
     DFA::removeTransition(from_, with, to_);
+}
+
+template<class T>
+DFA::State CDFA<T>::findState(const CState &cState) const {
+    auto it = kstd::find(cStates.begin(), cStates.end(), cState);
+    return it - cStates.begin();
+}
+
+template<class T>
+typename CDFA<T>::const_iterator CDFA<T>::findCState(DFA::State state) const {
+    if (state >= cStates.size()) {
+        return cStates.end();
+    }
+    return cStates.begin() + state;
 }

@@ -1,20 +1,22 @@
-#include "Bitset.h"
+#include "Subset.h"
 #include <utility>
 
-Bitset::Bitset(value_type max)
+Subset::Subset() : Subset(BUCKET_SIZE - 1) {}
+
+Subset::Subset(value_type max)
         : max{max} {
     data = new Bucket[bucketCount()]{};
 }
 
-Bitset::Bitset(const Bitset &other) {
+Subset::Subset(const Subset &other) {
     copyFrom(other);
 }
 
-Bitset::Bitset(Bitset &&other) noexcept {
+Subset::Subset(Subset &&other) noexcept {
     moveFrom(std::move(other));
 }
 
-Bitset &Bitset::operator=(const Bitset &other) {
+Subset &Subset::operator=(const Subset &other) {
     if (this != &other) {
         free();
         copyFrom(other);
@@ -22,7 +24,7 @@ Bitset &Bitset::operator=(const Bitset &other) {
     return *this;
 }
 
-Bitset &Bitset::operator=(Bitset &&other) noexcept {
+Subset &Subset::operator=(Subset &&other) noexcept {
     if (this != &other) {
         free();
         moveFrom(std::move(other));
@@ -30,11 +32,11 @@ Bitset &Bitset::operator=(Bitset &&other) noexcept {
     return *this;
 }
 
-Bitset::~Bitset() {
+Subset::~Subset() {
     free();
 }
 
-bool Bitset::empty() const {
+bool Subset::empty() const {
     for (size_type b = 0; b < bucketCount(); ++b) {
         if (data[b] != 0) {
             return false;
@@ -43,17 +45,17 @@ bool Bitset::empty() const {
     return true;
 }
 
-Bitset::value_type Bitset::capacity() const {
+Subset::value_type Subset::capacity() const {
     return max;
 }
 
-void Bitset::clear() {
+void Subset::clear() {
     for (size_type b = 0; b < bucketCount(); ++b) {
         data[b] = 0;
     }
 }
 
-void Bitset::add(Bitset::value_type num) {
+void Subset::add(Subset::value_type num) {
     if (num >= max) {
         resize(num + 1);
     }
@@ -62,7 +64,7 @@ void Bitset::add(Bitset::value_type num) {
 
 }
 
-void Bitset::remove(Bitset::value_type num) {
+void Subset::remove(Subset::value_type num) {
     if (num >= max) {
         return;
     }
@@ -70,7 +72,7 @@ void Bitset::remove(Bitset::value_type num) {
     data[bucket(num)] &= ~position(num);
 }
 
-bool Bitset::contains(Bitset::value_type num) const {
+bool Subset::contains(Subset::value_type num) const {
     if (num >= max) {
         return false;
     }
@@ -78,25 +80,25 @@ bool Bitset::contains(Bitset::value_type num) const {
     return data[bucket(num)] & position(num);
 }
 
-Bitset Bitset::operator~() const {
-    Bitset complement(*this);
+Subset Subset::operator~() const {
+    Subset complement(*this);
     complement.flip();
     return complement;
 }
 
-void Bitset::flip() {
+void Subset::flip() {
     size_type buckets = bucketCount();
     for (size_type b = 0; b < buckets; ++b) {
         data[b] = ~data[b];
     }
 }
 
-void Bitset::free() {
+void Subset::free() {
     delete[] data;
     data = nullptr;
 }
 
-void Bitset::copyFrom(const Bitset &other) {
+void Subset::copyFrom(const Subset &other) {
     max = other.max;
 
     size_type buckets = bucketCount();
@@ -106,14 +108,14 @@ void Bitset::copyFrom(const Bitset &other) {
     }
 }
 
-void Bitset::moveFrom(Bitset &&other) {
+void Subset::moveFrom(Subset &&other) {
     max = other.max;
 
     data = other.data;
     other.data = nullptr;
 }
 
-void Bitset::resize(Bitset::value_type newMax) {
+void Subset::resize(Subset::value_type newMax) {
     if (bucket(newMax) <= bucketCount()) {
         max = newMax;
         return;
@@ -130,20 +132,20 @@ void Bitset::resize(Bitset::value_type newMax) {
     data = temp;
 }
 
-Bitset::size_type Bitset::bucketCount() const {
+Subset::size_type Subset::bucketCount() const {
     return 1 + max / BUCKET_SIZE;
 }
 
-Bitset::size_type Bitset::bucket(Bitset::value_type num) const {
+Subset::size_type Subset::bucket(Subset::value_type num) const {
     return num / BUCKET_SIZE;
 }
 
-Bitset::position_idx Bitset::position(Bitset::value_type num) const {
+Subset::position_idx Subset::position(Subset::value_type num) const {
     size_type shift = (BUCKET_SIZE - 1) - num % BUCKET_SIZE;
     return 1 << shift;
 }
 
-bool operator==(const Bitset &rhs, const Bitset &lhs) {
+bool operator==(const Subset &rhs, const Subset &lhs) {
     size_t rCount = rhs.bucketCount();
     size_t lCount = lhs.bucketCount();
     size_t min = rCount < lCount ? rCount : lCount;
@@ -163,6 +165,6 @@ bool operator==(const Bitset &rhs, const Bitset &lhs) {
     return true;
 }
 
-bool operator!=(const Bitset &rhs, const Bitset &lhs) {
+bool operator!=(const Subset &rhs, const Subset &lhs) {
     return !(rhs == lhs);
 }

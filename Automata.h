@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MyStructures/Set/Set.hpp"
+#include "MyStructures/Subset/Subset.h"
 
 class Automata {
 public:

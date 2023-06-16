@@ -2,7 +2,7 @@
 
 #include "Automata.h"
 #include "MyStructures/Pair/Pair.hpp"
-#include "MyStructures/Bitset/Bitset.h"
+#include "CDFA.hpp"
 
 class NDFA : public Automata {
 public:
@@ -15,8 +15,6 @@ protected:
     StateCollection initialStates;
     StateCollection finalStates;
     TransitionCollection transitions;
-
-private:
 
     State lastState() const;
 
@@ -34,7 +32,7 @@ private:
 
     void copyTransitions(State state, const Vector<Transition> &stateTr, State offsetIdx);
 
-    Bitset unreachableStates() const;
+    Subset unreachableStates() const;
 
 public:
     // State logic
@@ -75,6 +73,8 @@ public:
     NDFA &operator*=(const NDFA &other);
 
     NDFA operator*();
+
+    DFA getDeterminized() const;
 
     friend void print(const NDFA &ndfa);
 };

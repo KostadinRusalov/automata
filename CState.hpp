@@ -12,7 +12,7 @@ protected:
 public:
     CState() = default;
 
-    explicit CState(const T &label);
+    CState(const T &label);
 
     reference label();
 

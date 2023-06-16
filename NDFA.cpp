@@ -1,5 +1,6 @@
 #include "NDFA.h"
 #include "SubtractOneAfter.hpp"
+#include "MyStructures/Queue/Queue.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet!";
@@ -170,8 +171,8 @@ int NDFA::accepts(NDFA::State from, const char *word) const {
     return successPaths;
 }
 
-Bitset NDFA::unreachableStates() const {
-    Bitset reachable(transitions.size());
+Subset NDFA::unreachableStates() const {
+    Subset reachable(transitions.size());
 
     reachable.add(initialStates);
     for (auto &stateTr: transitions) {
@@ -183,7 +184,7 @@ Bitset NDFA::unreachableStates() const {
 }
 
 void NDFA::removeUnreachableStates() {
-    Bitset unreachable = unreachableStates();
+    Subset unreachable = unreachableStates();
     for (State s = 0; s < unreachable.capacity(); ++s) {
         if (unreachable.contains(s)) {
             removeState(s);
@@ -278,6 +279,54 @@ NDFA NDFA::operator*() {
 
     n.removeUnreachableStates();
     return n;
+}
+
+namespace {
+    void f() {
+
+    }
+}
+
+DFA NDFA::getDeterminized() const {
+    CDFA<Subset> d;
+    d.setAlphabet(alphabet);
+
+    CState<Subset> initial;
+    initial.label().add(initialStates);
+    auto start = d.addInitialState(std::move(initial));
+
+    Queue<State> created;
+    created.push(start);
+
+    while (!created.empty()) {
+        auto q = d.findCState(created.peek());
+        created.pop();
+
+        for (char s: alphabet) {
+            CState<Subset> next;
+            auto &set = q->label();
+
+            for (State i = 0; i < transitions.size(); ++i) {
+                if (!set.contains(i)) {
+                    continue;
+                }
+
+                auto &stateTr = transitions[i];
+                auto tr = findTransition(stateTr, s);
+
+                if (tr != stateTr.end()) {
+                    next.label().add(tr->second);
+                }
+            }
+
+            if (!next.label().empty()) {
+                auto n = d.addState(std::move(next));
+                created.push(n);
+            }
+        }
+    }
+
+    return d;
 }
 
 

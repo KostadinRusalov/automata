@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 
-class Bitset {
+class Subset {
 public:
     typedef uint32_t Bucket;
     typedef size_t size_type;
@@ -19,17 +19,19 @@ private:
     mutable value_type curr;
 
 public:
-    explicit Bitset(value_type max);
+    Subset();
 
-    Bitset(const Bitset &other);
+    explicit Subset(value_type max);
 
-    Bitset(Bitset &&other) noexcept;
+    Subset(const Subset &other);
 
-    Bitset &operator=(const Bitset &other);
+    Subset(Subset &&other) noexcept;
 
-    Bitset &operator=(Bitset &&other) noexcept;
+    Subset &operator=(const Subset &other);
 
-    ~Bitset();
+    Subset &operator=(Subset &&other) noexcept;
+
+    ~Subset();
 
     // capacity
     bool empty() const;
@@ -49,16 +51,16 @@ public:
     // element access
     bool contains(value_type num) const;
 
-    Bitset operator~() const;
+    Subset operator~() const;
 
     void flip();
 
 private:
     void free();
 
-    void copyFrom(const Bitset &other);
+    void copyFrom(const Subset &other);
 
-    void moveFrom(Bitset &&other);
+    void moveFrom(Subset &&other);
 
     void resize(value_type newMax);
 
@@ -68,14 +70,14 @@ private:
 
     position_idx position(value_type num) const;
 
-    friend bool operator==(const Bitset &rhs, const Bitset &lhs);
+    friend bool operator==(const Subset &rhs, const Subset &lhs);
 
-    friend bool operator!=(const Bitset &rhs, const Bitset &lhs);
+    friend bool operator!=(const Subset &rhs, const Subset &lhs);
 
 };
 
 template<class Container>
-void Bitset::add(const Container &nums) {
+void Subset::add(const Container &nums) {
     for (auto num: nums) {
         add(num);
     }
