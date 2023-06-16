@@ -25,15 +25,15 @@ private:
     void validate(char s) const;
 
 public:
-    State addState();
+    virtual State addState();
 
     void removeState(State state);
 
-    State addInitialState();
+    virtual State addInitialState();
 
     void makeInitialState(State state);
 
-    State addFinalState();
+    virtual State addFinalState();
 
     void makeFinalState(State state);
 
