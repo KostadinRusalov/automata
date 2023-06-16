@@ -2,7 +2,7 @@
 #include <utility>
 
 Bitset::Bitset(value_type max)
-        : max{max}, count{0} {
+        : max{max} {
     data = new Bucket[bucketCount()]{};
 }
 
@@ -43,10 +43,6 @@ bool Bitset::empty() const {
     return true;
 }
 
-Bitset::size_type Bitset::size() const {
-    return count;
-}
-
 Bitset::value_type Bitset::capacity() const {
     return max;
 }
@@ -61,20 +57,17 @@ void Bitset::add(Bitset::value_type num) {
     if (num >= max) {
         resize(num + 1);
     }
-    if (!contains(num)) {
-        count++;
-        data[bucket(num)] |= position(num);
-    }
+
+    data[bucket(num)] |= position(num);
+
 }
 
 void Bitset::remove(Bitset::value_type num) {
     if (num >= max) {
         return;
     }
-    if (contains(num)) {
-        count--;
-        data[bucket(num)] &= ~position(num);
-    }
+
+    data[bucket(num)] &= ~position(num);
 }
 
 bool Bitset::contains(Bitset::value_type num) const {
@@ -105,7 +98,6 @@ void Bitset::free() {
 
 void Bitset::copyFrom(const Bitset &other) {
     max = other.max;
-    count = other.max;
 
     size_type buckets = bucketCount();
     data = new Bucket[buckets];
@@ -116,7 +108,6 @@ void Bitset::copyFrom(const Bitset &other) {
 
 void Bitset::moveFrom(Bitset &&other) {
     max = other.max;
-    count = other.max;
 
     data = other.data;
     other.data = nullptr;
@@ -152,3 +143,26 @@ Bitset::position_idx Bitset::position(Bitset::value_type num) const {
     return 1 << shift;
 }
 
+bool operator==(const Bitset &rhs, const Bitset &lhs) {
+    size_t rCount = rhs.bucketCount();
+    size_t lCount = lhs.bucketCount();
+    size_t min = rCount < lCount ? rCount : lCount;
+
+    for (size_t b = 0; b < min; ++b) {
+        if (rhs.data[b] != lhs.data[b]) {
+            return false;
+        }
+    }
+
+    for (size_t b = min; b < lCount; ++b) {
+        if (lhs.data[b] > 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool operator!=(const Bitset &rhs, const Bitset &lhs) {
+    return !(rhs == lhs);
+}
