@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Automata.h"
 #include "MyStructures/Pair/Pair.hpp"
-#include "NDFA.h"
+#include "Automata.h"
 
 class DFA : public Automata {
 public:
@@ -48,8 +47,6 @@ public:
     void makeTotal();
 
     void removeUnreachableStates();
-
-    NDFA reverse() const;
 
     bool accepts(const char *word) const;
 

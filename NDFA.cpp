@@ -9,6 +9,10 @@ NDFA::NDFA(const Automata::Alphabet &alphabet) {
     this->alphabet = alphabet;
 }
 
+NDFA::NDFA(Automata::Alphabet &&alphabet) {
+    this->alphabet = std::move(alphabet);
+}
+
 NDFA::State NDFA::lastState() const {
     return transitions.size() - 1;
 }

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "DFA.h"
 #include "CState.hpp"
+#include "DFA.h"
 
 // constructional DFA
 template<class T>
@@ -9,18 +9,17 @@ class CDFA : public DFA {
 public:
     typedef CState<T> CState;
     typedef Vector<CState> CStateCollection;
-
     typedef typename CStateCollection::const_iterator const_iterator;
 
 protected:
     CStateCollection cStates;
-
 
 public:
     CDFA() = default;
 
     CDFA(const Alphabet &alphabet);
 
+    CDFA(Alphabet &&alphabet);
 
     State addState(const CState &cState);
 
@@ -50,6 +49,12 @@ public:
 template<class T>
 CDFA<T>::CDFA(const Automata::Alphabet &alphabet) {
     this->alphabet = alphabet;
+
+}
+
+template<class T>
+CDFA<T>::CDFA(Automata::Alphabet &&alphabet) {
+    this->alphabet = std::move(alphabet);
 }
 
 //template<class T>

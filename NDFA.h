@@ -11,8 +11,6 @@ public:
 
     friend class NDFAFactory;
 
-    friend class DFA;
-
 protected:
     StateCollection initialStates;
     StateCollection finalStates;
@@ -40,6 +38,8 @@ public:
     NDFA() = default;
 
     NDFA(const Alphabet &alphabet);
+
+    NDFA(Alphabet &&alphabet);
 
     // State logic
     State addState();
