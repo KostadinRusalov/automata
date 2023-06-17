@@ -171,8 +171,8 @@ int NDFA::accepts(NDFA::State from, const char *word) const {
     return successPaths;
 }
 
-Subset NDFA::unreachableStates() const {
-    Subset reachable(transitions.size());
+BitSubset NDFA::unreachableStates() const {
+    BitSubset reachable(transitions.size());
 
     reachable.add(initialStates);
     for (auto &stateTr: transitions) {
@@ -184,7 +184,7 @@ Subset NDFA::unreachableStates() const {
 }
 
 void NDFA::removeUnreachableStates() {
-    Subset unreachable = unreachableStates();
+    BitSubset unreachable = unreachableStates();
     for (State s = 0; s < unreachable.capacity(); ++s) {
         if (unreachable.contains(s)) {
             removeState(s);
@@ -288,12 +288,16 @@ namespace {
 }
 
 DFA NDFA::getDeterminized() const {
-    CDFA<Subset> d;
+    CDFA<BitSubset> d;
     d.setAlphabet(alphabet);
 
-    CState<Subset> initial;
+    CState<BitSubset> initial;
     initial.label().add(initialStates);
     auto start = d.addInitialState(std::move(initial));
+
+    if (initialStates.intersectsWith(finalStates)) {
+        d.makeFinalState(start);
+    }
 
     Queue<State> created;
     created.push(start);
@@ -303,24 +307,24 @@ DFA NDFA::getDeterminized() const {
         created.pop();
 
         for (char s: alphabet) {
-            CState<Subset> next;
+
             auto &set = q->label();
+            CState<BitSubset> newState;
+            bool isFinal = false;
 
             for (State i = 0; i < transitions.size(); ++i) {
-                if (!set.contains(i)) {
-                    continue;
-                }
+                if (!set.contains(i)) { continue; }
 
                 auto &stateTr = transitions[i];
                 auto tr = findTransition(stateTr, s);
 
                 if (tr != stateTr.end()) {
-                    next.label().add(tr->second);
+                    newState.label().add(tr->second);
                 }
             }
 
-            if (!next.label().empty()) {
-                auto n = d.addState(std::move(next));
+            if (!newState.label().empty()) {
+                auto n = d.addState(std::move(newState));
                 created.push(n);
             }
         }

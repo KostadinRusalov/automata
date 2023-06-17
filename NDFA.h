@@ -32,7 +32,7 @@ protected:
 
     void copyTransitions(State state, const Vector<Transition> &stateTr, State offsetIdx);
 
-    Subset unreachableStates() const;
+    BitSubset unreachableStates() const;
 
 public:
     // State logic

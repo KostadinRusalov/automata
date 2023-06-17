@@ -2,8 +2,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include "../Vector/Vector.hpp"
 
-class Subset {
+class BitSubset {
 public:
     typedef uint32_t Bucket;
     typedef size_t size_type;
@@ -19,19 +20,21 @@ private:
     mutable value_type curr;
 
 public:
-    Subset();
+    BitSubset();
 
-    explicit Subset(value_type max);
+    explicit BitSubset(value_type max);
 
-    Subset(const Subset &other);
+    explicit BitSubset(const Vector<unsigned> &collection);
 
-    Subset(Subset &&other) noexcept;
+    BitSubset(const BitSubset &other);
 
-    Subset &operator=(const Subset &other);
+    BitSubset(BitSubset &&other) noexcept;
 
-    Subset &operator=(Subset &&other) noexcept;
+    BitSubset &operator=(const BitSubset &other);
 
-    ~Subset();
+    BitSubset &operator=(BitSubset &&other) noexcept;
+
+    ~BitSubset();
 
     // capacity
     bool empty() const;
@@ -51,16 +54,16 @@ public:
     // element access
     bool contains(value_type num) const;
 
-    Subset operator~() const;
+    BitSubset operator~() const;
 
     void flip();
 
 private:
     void free();
 
-    void copyFrom(const Subset &other);
+    void copyFrom(const BitSubset &other);
 
-    void moveFrom(Subset &&other);
+    void moveFrom(BitSubset &&other);
 
     void resize(value_type newMax);
 
@@ -70,14 +73,14 @@ private:
 
     position_idx position(value_type num) const;
 
-    friend bool operator==(const Subset &rhs, const Subset &lhs);
+    friend bool operator==(const BitSubset &rhs, const BitSubset &lhs);
 
-    friend bool operator!=(const Subset &rhs, const Subset &lhs);
+    friend bool operator!=(const BitSubset &rhs, const BitSubset &lhs);
 
 };
 
 template<class Container>
-void Subset::add(const Container &nums) {
+void BitSubset::add(const Container &nums) {
     for (auto num: nums) {
         add(num);
     }

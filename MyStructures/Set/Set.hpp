@@ -2,6 +2,7 @@
 
 #include "../Vector/Vector.hpp"
 #include "../Algorithm.hpp"
+#include "../BitSubset/BitSubset.h"
 
 template<class T>
 class Set {
@@ -12,13 +13,13 @@ public:
     typedef typename Vector<T>::const_iterator const_iterator;
 
 private:
-    Vector<T> elements;
+    Vector<T> elements_;
 public:
     Set() = default;
 
-    Set(const Vector<T> &elements);
+    Set(const Vector<T> &elements_);
 
-    Set(Vector<T> &&elements);
+    Set(Vector<T> &&elements_);
 
     Set(std::initializer_list<value_type> data);
 
@@ -27,6 +28,8 @@ public:
     size_type size() const;
 
     size_type capacity() const;
+
+    const Vector<T> &elements() const;
 
     void clear();
 
@@ -58,15 +61,15 @@ public:
 };
 
 template<class T>
-Set<T>::Set(const Vector<T> &elements) {
-    for (auto &element: elements) {
+Set<T>::Set(const Vector<T> &elements_) {
+    for (auto &element: elements_) {
         add(element);
     }
 }
 
 template<class T>
-Set<T>::Set(Vector<T> &&elements) {
-    for (auto &element: elements) {
+Set<T>::Set(Vector<T> &&elements_) {
+    for (auto &element: elements_) {
         add(std::move(element));
     }
 }
@@ -80,35 +83,35 @@ Set<T>::Set(std::initializer_list<value_type> data) {
 
 template<class T>
 bool Set<T>::empty() const {
-    return elements.empty();
+    return elements_.empty();
 }
 
 template<class T>
 typename Set<T>::size_type Set<T>::size() const {
-    return elements.size();
+    return elements_.size();
 }
 
 template<class T>
 typename Set<T>::size_type Set<T>::capacity() const {
-    return elements.capacity();
+    return elements_.capacity();
 }
 
 template<class T>
 void Set<T>::clear() {
-    elements.clear();
+    elements_.clear();
 }
 
 template<class T>
 void Set<T>::add(const T &element) {
     if (!contains(element)) {
-        elements.pushBack(element);
+        elements_.pushBack(element);
     }
 }
 
 template<class T>
 void Set<T>::add(T &&element) {
     if (!contains(element)) {
-        elements.pushBack(element);
+        elements_.pushBack(element);
     }
 }
 
@@ -116,7 +119,7 @@ template<class T>
 void Set<T>::remove(const T &element) {
     const_iterator pos = cbegin() + (find(element) - begin());
     if (pos != cend()) {
-        elements.erase(pos);
+        elements_.erase(pos);
     }
 }
 
@@ -127,49 +130,56 @@ bool Set<T>::contains(const T &element) const {
 
 template<class T>
 typename Set<T>::iterator Set<T>::find(const T &element) {
-    return kstd::find(elements.begin(), elements.end(), element);
+    return kstd::find(elements_.begin(), elements_.end(), element);
 }
 
 template<class T>
 typename Set<T>::const_iterator Set<T>::find(const T &element) const {
-    return kstd::find(elements.cbegin(), elements.cend(), element);
+    return kstd::find(elements_.cbegin(), elements_.cend(), element);
 }
 
 template<class T>
 typename Set<T>::iterator Set<T>::begin() {
-    return elements.begin();
+    return elements_.begin();
 }
 
 template<class T>
 typename Set<T>::const_iterator Set<T>::begin() const {
-    return elements.begin();
+    return elements_.begin();
 }
 
 template<class T>
 typename Set<T>::const_iterator Set<T>::cbegin() const {
-    return elements.cbegin();
+    return elements_.cbegin();
 }
 
 template<class T>
 typename Set<T>::iterator Set<T>::end() {
-    return elements.end();
+    return elements_.end();
 }
 
 template<class T>
 typename Set<T>::const_iterator Set<T>::end() const {
-    return elements.end();
+    return elements_.end();
 }
 
 template<class T>
 typename Set<T>::const_iterator Set<T>::cend() const {
-    return elements.cend();
+    return elements_.cend();
 }
 
 template<class T>
 bool Set<T>::intersectsWith(const Set<T> &other) const {
-    return kstd::anyOf(begin(), end(),
-                       [&other](const T &el) {
-                           return other.contains(el);
-                       }
-    );
+    BitSubset oth(other.elements_);
+    for (auto el: elements_) {
+        if (!oth.contains(el)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template<class T>
+const Vector<T> &Set<T>::elements() const {
+    return elements_;
 }
