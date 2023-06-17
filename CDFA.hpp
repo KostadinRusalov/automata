@@ -48,13 +48,13 @@ public:
 
 template<class T>
 CDFA<T>::CDFA(const Automata::Alphabet &alphabet) {
-    this->alphabet = alphabet;
+    alphabet_ = alphabet;
 
 }
 
 template<class T>
 CDFA<T>::CDFA(Automata::Alphabet &&alphabet) {
-    this->alphabet = std::move(alphabet);
+    alphabet_ = std::move(alphabet);
 }
 
 //template<class T>

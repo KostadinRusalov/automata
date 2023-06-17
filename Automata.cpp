@@ -1,25 +1,29 @@
 #include "Automata.h"
 
 void Automata::setAlphabet(const Alphabet &alphabet) {
-    this->alphabet = alphabet;
+    alphabet_ = alphabet;
 }
 
 void Automata::setAlphabet(Alphabet &&alphabet) {
-    this->alphabet = std::move(alphabet);
+    alphabet_ = std::move(alphabet);
 }
 
 void Automata::addSymbol(char s) {
-    alphabet.add(s);
+    alphabet_.add(s);
 }
 
 void Automata::addSymbols(const Alphabet &other) {
     for (auto s: other) {
-        alphabet.add(s);
+        alphabet_.add(s);
     }
 }
 
 void Automata::removeSymbol(char s) {
-    alphabet.remove(s);
+    alphabet_.remove(s);
+}
+
+const Automata::Alphabet &Automata::alphabet() const {
+    return alphabet_;
 }
 
 

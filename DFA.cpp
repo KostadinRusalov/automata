@@ -5,7 +5,7 @@
 #include "SubtractOneAfter.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
-const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet!";
+const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet_!";
 
 DFA::State DFA::lastState() const {
     return transitions.size() - 1;
@@ -27,7 +27,7 @@ void DFA::validate(State state) const {
 }
 
 void DFA::validate(char s) const {
-    if (!alphabet.contains(s)) {
+    if (!alphabet_.contains(s)) {
         throw std::logic_error(INVALID_STATE);
     }
 }
@@ -105,7 +105,7 @@ void DFA::removeTransition(DFA::State from, char with, DFA::State to) {
     validate(to);
     validate(with);
 
-    if (!alphabet.contains(with)) {
+    if (!alphabet_.contains(with)) {
         throw std::logic_error(INVALID_SYMBOL);
     }
 
@@ -122,7 +122,7 @@ bool DFA::isTotal() const {
     return kstd::allOf(
             transitions.begin(), transitions.end(),
             [&](const Vector<Transition> &tr) {
-                return tr.size() == alphabet.size();
+                return tr.size() == alphabet_.size();
             }
     );
 }
@@ -133,11 +133,11 @@ void DFA::makeTotal() {
     State deadState = addState();
     for (State q = 0; q < transitions.size(); ++q) {
         auto &stateTr = transitions[q];
-        if (stateTr.size() == alphabet.size()) {
+        if (stateTr.size() == alphabet_.size()) {
             continue;
         }
 
-        Alphabet leftSymbols(alphabet);
+        Alphabet leftSymbols(alphabet_);
         for (auto &tr: stateTr) {
             leftSymbols.remove(tr.first);
         }
@@ -170,7 +170,7 @@ bool DFA::accepts(const char *word) const {
 }
 
 NDFA DFA::reverse() const {
-    NDFA n(alphabet);
+    NDFA n(alphabet_);
 
     BitSubset finals(finalStates.elements());
     for (State s = 0; s < transitions.size(); ++s) {

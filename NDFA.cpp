@@ -4,14 +4,14 @@
 #include "CDFA.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
-const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet!";
+const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet_!";
 
 NDFA::NDFA(const Automata::Alphabet &alphabet) {
-    this->alphabet = alphabet;
+    alphabet_ = alphabet;
 }
 
 NDFA::NDFA(Automata::Alphabet &&alphabet) {
-    this->alphabet = std::move(alphabet);
+    alphabet_ = std::move(alphabet);
 }
 
 NDFA::State NDFA::lastState() const {
@@ -28,7 +28,7 @@ NDFA::State NDFA::addState() {
 }
 
 void NDFA::validate(char s) const {
-    if (!alphabet.contains(s)) {
+    if (!alphabet_.contains(s)) {
         throw std::logic_error(INVALID_STATE);
     }
 }
@@ -129,7 +129,7 @@ bool NDFA::isTotal() const {
     return kstd::allOf(
             transitions.begin(), transitions.end(),
             [&](const Vector<Transition> &tr) {
-                return tr.size() == alphabet.size();
+                return tr.size() == alphabet_.size();
             }
     );
 }
@@ -140,11 +140,11 @@ void NDFA::makeTotal() {
     State deadState = addState();
     for (State q = 0; q < transitions.size(); ++q) {
         auto &stateTr = transitions[q];
-        if (stateTr.size() == alphabet.size()) {
+        if (stateTr.size() == alphabet_.size()) {
             continue;
         }
 
-        Alphabet leftSymbols(alphabet);
+        Alphabet leftSymbols(alphabet_);
         for (auto &tr: stateTr) {
             leftSymbols.remove(tr.first);
         }
@@ -234,7 +234,7 @@ void NDFA::copyTransitions(NDFA::State state, const Vector<NDFA::Transition> &st
 }
 
 NDFA &NDFA::operator+=(const NDFA &other) {
-    addSymbols(other.alphabet);
+    addSymbols(other.alphabet_);
     size_t offsetIdx = transitions.size();
 
     for (auto &stateTr: other.transitions) {
@@ -336,7 +336,7 @@ NDFA::State NDFA::addNewState(CDFA<BitSubset> &d, NDFA::State from, char with,
 }
 
 DFA NDFA::determinized() const {
-    CDFA<BitSubset> d(alphabet);
+    CDFA<BitSubset> d(alphabet_);
 
     Queue<State> created;
     created.push(d.addInitialState({initialStates.elements()}));
@@ -346,7 +346,7 @@ DFA NDFA::determinized() const {
         auto cState = *d.findCState(state);
         created.pop();
 
-        for (char s: alphabet) {
+        for (char s: alphabet_) {
             bool isFinal = false;
             auto newState = createNewSubsetState(cState, s, isFinal);
 

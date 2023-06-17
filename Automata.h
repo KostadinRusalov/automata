@@ -14,10 +14,12 @@ public:
     typedef Set<State> StateCollection;
 
 protected:
-    Alphabet alphabet;
+    Alphabet alphabet_;
 
 public:
     virtual ~Automata() = default;
+
+    const Alphabet &alphabet() const;
 
     void setAlphabet(const Alphabet &alphabet);
 

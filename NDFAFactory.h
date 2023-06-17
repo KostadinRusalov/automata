@@ -2,97 +2,25 @@
 
 #include "NDFA.h"
 
-class NDFAFactory {
-public:
-    static NDFA exact(const NDFA::Alphabet &alphabet, const char *word) {
-        NDFA n;
-        n.setAlphabet(alphabet);
+namespace NDFAFactory {
+    NDFA exact(const NDFA::Alphabet &alphabet, const char *word);
 
-        auto q = n.addInitialState();
+    NDFA exact(const char *word);
 
-        while (*word) {
-            auto next = n.addState();
-            n.addTransition(q, *word, next);
+    NDFA prefix(const NDFA::Alphabet &alphabet, const char *word);
 
-            q = next;
-            ++word;
-        }
+    NDFA prefix(const char *word);
 
-        n.makeFinalState(q);
-        return n;
-    }
+    NDFA suffix(const NDFA::Alphabet &alphabet, const char *word);
 
-    static NDFA prefix(const NDFA::Alphabet &alphabet, const char *word) {
-        NDFA n;
-        n.setAlphabet(alphabet);
+    NDFA suffix(const char *word);
 
-        auto q = n.addInitialState();
+    NDFA infix(const NDFA::Alphabet &alphabet, const char *word);
 
-        while (*word) {
-            auto next = n.addState();
-            n.addTransition(q, *word, next);
+    NDFA infix(const char *word);
 
-            q = next;
-            ++word;
-        }
+    NDFA emptyLanguage();
 
-        n.makeFinalState(q);
-
-        for (char c: alphabet) {
-            n.addTransition(q, c, q);
-        }
-
-        return n;
-    }
-
-    static NDFA suffix(const NDFA::Alphabet &alphabet, const char *word) {
-        NDFA n;
-        n.setAlphabet(alphabet);
-
-        auto q = n.addInitialState();
-
-        for (char c: alphabet) {
-            n.addTransition(q, c, q);
-        }
-
-        while (*word) {
-            auto next = n.addState();
-            n.addTransition(q, *word, next);
-
-            q = next;
-            ++word;
-        }
-
-        n.makeFinalState(q);
-
-        return n;
-    }
-
-    static NDFA infix(const NDFA::Alphabet &alphabet, const char *word) {
-        NDFA n;
-        n.setAlphabet(alphabet);
-
-        auto q = n.addInitialState();
-
-        for (char c: alphabet) {
-            n.addTransition(q, c, q);
-        }
-
-        while (*word) {
-            auto next = n.addState();
-            n.addTransition(q, *word, next);
-
-            q = next;
-            ++word;
-        }
-
-        n.makeFinalState(q);
-        for (char c: alphabet) {
-            n.addTransition(q, c, q);
-        }
-        return n;
-    }
-
-
+    NDFA emptyWord();
 };
 

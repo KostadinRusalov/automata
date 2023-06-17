@@ -10,8 +10,6 @@ public:
     typedef Pair<char, Set<State>> Transition;
     typedef Vector<Vector<Transition>> TransitionCollection;
 
-    friend class NDFAFactory;
-
 protected:
     StateCollection initialStates;
     StateCollection finalStates;
