@@ -17,7 +17,6 @@ public:
 private:
     Bucket *data;
     value_type max;
-    mutable value_type curr;
 
 public:
     BitSubset();

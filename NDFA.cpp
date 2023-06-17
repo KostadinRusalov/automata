@@ -295,7 +295,7 @@ DFA NDFA::getDeterminized() const {
 
     while (!created.empty()) {
         auto qState = created.peek();
-        auto q = d.findCState(qState);
+        auto q = *d.findCState(qState);
         created.pop();
 
         for (char s: alphabet) {
@@ -303,7 +303,7 @@ DFA NDFA::getDeterminized() const {
             bool isFinal = false;
 
             for (State st = 0; st < transitions.size(); ++st) {
-                if (!q->data().contains(st)) { continue; }
+                if (!q.data().contains(st)) { continue; }
 
                 auto tr = findTransition(transitions[st], s);
                 if (tr != transitions[st].end()) {
@@ -322,11 +322,11 @@ DFA NDFA::getDeterminized() const {
                 continue;
             }
 
-            created.push(state);
-            d.addState(std::move(newState));
-            d.addTransition(qState, s, state);
+            auto nState = d.addState(std::move(newState));
+            d.addTransition(qState, s, nState);
+            created.push(nState);
 
-            if (isFinal) { d.makeFinalState(state); }
+            if (isFinal) { d.makeFinalState(nState); }
         }
     }
 
