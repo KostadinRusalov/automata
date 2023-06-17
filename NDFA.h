@@ -3,6 +3,7 @@
 #include "Automata.h"
 #include "MyStructures/Pair/Pair.hpp"
 #include "DFA.h"
+#include "CDFA.hpp"
 
 class NDFA : public Automata {
 public:
@@ -35,6 +36,10 @@ protected:
     void findReachableStates(State from, BitSubset &reachable) const;
 
     BitSubset unreachableStates() const;
+
+    static State addNewState(CDFA<BitSubset> &d, State from, char with, CState<BitSubset> &&toNewState, bool isFinal);
+
+    CState<BitSubset> createNewSubsetState(const CState<BitSubset> &from,char with, bool& isFinal) const;
 
 public:
     NDFA() = default;
@@ -82,7 +87,7 @@ public:
 
     NDFA operator*();
 
-    DFA getDeterminized() const;
+    DFA determinized() const;
 
     friend void print(const NDFA &ndfa);
 };
