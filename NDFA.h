@@ -11,6 +11,8 @@ public:
 
     friend class NDFAFactory;
 
+    friend class DFA;
+
 protected:
     StateCollection initialStates;
     StateCollection finalStates;
@@ -33,8 +35,12 @@ protected:
     void copyTransitions(State state, const Vector<Transition> &stateTr, State offsetIdx);
 
     BitSubset unreachableStates() const;
-    
+
 public:
+    NDFA() = default;
+
+    NDFA(const Alphabet &alphabet);
+
     // State logic
     State addState();
 

@@ -5,6 +5,10 @@
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet!";
 
+NDFA::NDFA(const Automata::Alphabet &alphabet) {
+    this->alphabet = alphabet;
+}
+
 NDFA::State NDFA::lastState() const {
     return transitions.size() - 1;
 }

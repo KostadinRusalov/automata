@@ -23,11 +23,13 @@ void DFA::validate(State state) const {
         throw std::logic_error(INVALID_STATE);
     }
 }
+
 void DFA::validate(char s) const {
     if (!alphabet.contains(s)) {
         throw std::logic_error(INVALID_STATE);
     }
 }
+
 void DFA::removeState(DFA::State state) {
     validate(state);
 
@@ -163,4 +165,20 @@ bool DFA::accepts(const char *word) const {
 
     return next != errorState() &&
            finalStates.contains(next);
+}
+
+NDFA DFA::reverse() const {
+    NDFA n;
+    n.setAlphabet(alphabet);
+    n.initialStates = finalStates;
+    n.finalStates.add(initialState);
+
+    for (auto &stateTr: transitions) {
+        auto q = n.addState();
+        for (auto &tr: stateTr) {
+            n.addTransition(tr.second, tr.first, q);
+        }
+    }
+
+    return n;
 }

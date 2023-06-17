@@ -2,6 +2,7 @@
 
 #include "Automata.h"
 #include "MyStructures/Pair/Pair.hpp"
+#include "NDFA.h"
 
 class DFA : public Automata {
 public:
@@ -13,11 +14,9 @@ protected:
     StateCollection finalStates;
     TransitionCollection transitions;
 
-private:
     State lastState() const;
 
     State nextState(State current, char s) const;
-
 
     void validate(State state) const;
 
@@ -49,6 +48,8 @@ public:
     void makeTotal();
 
     void removeUnreachableStates();
+
+    NDFA reverse() const;
 
     bool accepts(const char *word) const;
 
