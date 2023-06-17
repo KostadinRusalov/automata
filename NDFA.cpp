@@ -137,7 +137,7 @@ bool NDFA::isTotal() const {
 void NDFA::makeTotal() {
     if (isTotal()) { return; }
 
-    State dump = addState();
+    State deadState = addState();
     for (State q = 0; q < transitions.size(); ++q) {
         auto &stateTr = transitions[q];
         if (stateTr.size() == alphabet.size()) {
@@ -150,11 +150,10 @@ void NDFA::makeTotal() {
         }
 
         for (char symbol: leftSymbols) {
-            addTransition(q, symbol, dump);
+            addTransition(q, symbol, deadState);
         }
     }
 }
-
 
 void NDFA::findReachableStates(State from, BitSubset &reachable) const {
     for (auto &tr: transitions[from]) {
@@ -362,7 +361,6 @@ DFA NDFA::determinized() const {
 
     return d;
 }
-
 
 NDFA operator+(const NDFA &rhs, const NDFA &lhs) {
     NDFA n(rhs);

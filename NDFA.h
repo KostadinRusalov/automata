@@ -37,9 +37,11 @@ protected:
 
     BitSubset unreachableStates() const;
 
-    static State addNewState(CDFA<BitSubset> &d, State from, char with, CState<BitSubset> &&toNewState, bool isFinal);
+    static State addNewState(CDFA<BitSubset> &d, State from, char with,
+                             CState<BitSubset> &&toNewState, bool isFinal);
 
-    CState<BitSubset> createNewSubsetState(const CState<BitSubset> &from,char with, bool& isFinal) const;
+    CState<BitSubset> createNewSubsetState(const CState<BitSubset> &from,
+                                           char with, bool &isFinal) const;
 
 public:
     NDFA() = default;

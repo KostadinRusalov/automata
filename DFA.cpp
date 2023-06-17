@@ -130,7 +130,7 @@ bool DFA::isTotal() const {
 void DFA::makeTotal() {
     if (isTotal()) { return; }
 
-    State dump = addState();
+    State deadState = addState();
     for (State q = 0; q < transitions.size(); ++q) {
         auto &stateTr = transitions[q];
         if (stateTr.size() == alphabet.size()) {
@@ -143,7 +143,7 @@ void DFA::makeTotal() {
         }
 
         for (char symbol: leftSymbols) {
-            addTransition(q, symbol, dump);
+            addTransition(q, symbol, deadState);
         }
     }
 }
