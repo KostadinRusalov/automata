@@ -24,7 +24,7 @@ public:
 
     explicit BitSubset(value_type max);
 
-    explicit BitSubset(const Vector<unsigned> &collection);
+    BitSubset(const Vector<unsigned> &collection);
 
     BitSubset(const BitSubset &other);
 

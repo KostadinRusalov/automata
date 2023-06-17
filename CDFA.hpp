@@ -17,11 +17,10 @@ protected:
 
 
 public:
-    State addState() = delete;
+    CDFA() = default;
 
-    State addInitialState() = delete;
+    CDFA(const Alphabet &alphabet);
 
-    State addFinalState() = delete;
 
     State addState(const CState &cState);
 
@@ -37,6 +36,8 @@ public:
 
     State addFinalState(CState &&cState);
 
+    void addTransition(State from, char with, State to);
+
     void addTransition(const CState &from, char with, const CState &to);
 
     void removeTransition(const CState &from, char with, const CState &to);
@@ -45,6 +46,29 @@ public:
 
     const_iterator findCState(State state) const;
 };
+
+template<class T>
+CDFA<T>::CDFA(const Automata::Alphabet &alphabet) {
+    this->alphabet = alphabet;
+}
+
+//template<class T>
+//Automata::State CDFA<T>::addState() {
+//    cStates.pushBack({});
+//    return DFA::addState();
+//}
+//
+//template<class T>
+//Automata::State CDFA<T>::addInitialState() {
+//    cStates.pushBack({});
+//    return DFA::addInitialState();
+//}
+//
+//template<class T>
+//Automata::State CDFA<T>::addFinalState() {
+//    cStates.pushBack({});
+//    return DFA::addFinalState();
+//}
 
 template<class T>
 DFA::State CDFA<T>::addState(const CState &cState) {
@@ -90,6 +114,10 @@ DFA::State CDFA<T>::addFinalState(CState &&cState) {
     return DFA::addFinalState();
 }
 
+template<class T>
+void CDFA<T>::addTransition(DFA::State from, char with, DFA::State to) {
+    DFA::addTransition(from, with, to);
+}
 
 template<class T>
 void CDFA<T>::addTransition(const CState &from, char with, const CState &to) {

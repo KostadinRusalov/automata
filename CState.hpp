@@ -7,34 +7,34 @@ class CState {
     typedef const value_type &const_reference;
 
 protected:
-    T label_;
+    T data_;
 
 public:
     CState() = default;
 
-    CState(const T &label);
+    CState(const T &data);
 
-    reference label();
+    reference data();
 
-    const_reference label() const;
+    const_reference data() const;
 };
 
 template<class T>
-CState<T>::CState(const T &label) : label_{label} {}
+CState<T>::CState(const T &data) : data_{data} {}
 
 template<class T>
-typename CState<T>::reference CState<T>::label() {
-    return label_;
+typename CState<T>::reference CState<T>::data() {
+    return data_;
 }
 
 template<class T>
-typename CState<T>::const_reference CState<T>::label() const {
-    return label_;
+typename CState<T>::const_reference CState<T>::data() const {
+    return data_;
 }
 
 template<class T>
 bool operator==(const CState<T> &rhs, const CState<T> &lhs) {
-    return rhs.label() == lhs.label();
+    return rhs.data() == lhs.data();
 }
 
 template<class T>

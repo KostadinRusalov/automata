@@ -171,12 +171,12 @@ typename Set<T>::const_iterator Set<T>::cend() const {
 template<class T>
 bool Set<T>::intersectsWith(const Set<T> &other) const {
     BitSubset oth(other.elements_);
-    for (auto el: elements_) {
-        if (!oth.contains(el)) {
-            return false;
+    for (auto &el: elements_) {
+        if (oth.contains(el)) {
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 template<class T>

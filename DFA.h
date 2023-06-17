@@ -18,13 +18,14 @@ private:
 
     State nextState(State current, char s) const;
 
-    State errorState() const;
 
     void validate(State state) const;
 
     void validate(char s) const;
 
 public:
+    State errorState() const;
+
     State addState();
 
     void removeState(State state);

@@ -185,7 +185,7 @@ BitSubset NDFA::unreachableStates() const {
 
 void NDFA::removeUnreachableStates() {
     BitSubset unreachable = unreachableStates();
-    for (State s = 0; s < unreachable.capacity(); ++s) {
+    for (State s = 0; s < transitions.size(); ++s) {
         if (unreachable.contains(s)) {
             removeState(s);
         }
@@ -288,45 +288,45 @@ namespace {
 }
 
 DFA NDFA::getDeterminized() const {
-    CDFA<BitSubset> d;
-    d.setAlphabet(alphabet);
-
-    CState<BitSubset> initial;
-    initial.label().add(initialStates);
-    auto start = d.addInitialState(std::move(initial));
-
-    if (initialStates.intersectsWith(finalStates)) {
-        d.makeFinalState(start);
-    }
+    CDFA<BitSubset> d(alphabet);
 
     Queue<State> created;
-    created.push(start);
+    created.push(d.addInitialState({initialStates.elements()}));
 
     while (!created.empty()) {
-        auto q = d.findCState(created.peek());
+        auto qState = created.peek();
+        auto q = d.findCState(qState);
         created.pop();
 
         for (char s: alphabet) {
-
-            auto &set = q->label();
             CState<BitSubset> newState;
             bool isFinal = false;
 
-            for (State i = 0; i < transitions.size(); ++i) {
-                if (!set.contains(i)) { continue; }
+            for (State st = 0; st < transitions.size(); ++st) {
+                if (!q->data().contains(st)) { continue; }
 
-                auto &stateTr = transitions[i];
-                auto tr = findTransition(stateTr, s);
+                auto tr = findTransition(transitions[st], s);
+                if (tr != transitions[st].end()) {
+                    newState.data().add(tr->second);
 
-                if (tr != stateTr.end()) {
-                    newState.label().add(tr->second);
+                    if (tr->second.intersectsWith(finalStates)) {
+                        isFinal = true;
+                    }
                 }
             }
+            if (newState.data().empty()) { continue; }
 
-            if (!newState.label().empty()) {
-                auto n = d.addState(std::move(newState));
-                created.push(n);
+            auto state = d.findState(newState);
+            if (state != d.errorState()) {
+                d.addTransition(qState, s, state);
+                continue;
             }
+
+            created.push(state);
+            d.addState(std::move(newState));
+            d.addTransition(qState, s, state);
+
+            if (isFinal) { d.makeFinalState(state); }
         }
     }
 
