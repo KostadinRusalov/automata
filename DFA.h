@@ -21,6 +21,10 @@ protected:
 
     void validate(char s) const;
 
+    void findReachableStates(State from, BitSubset &reachable) const;
+
+    BitSubset unreachableStates() const;
+
 public:
     State errorState() const;
 

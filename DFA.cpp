@@ -187,3 +187,28 @@ NDFA DFA::reverse() const {
     }
     return n;
 }
+
+void DFA::findReachableStates(Automata::State from, BitSubset &reachable) const {
+    for (auto &tr: transitions[from]) {
+        if (!reachable.contains(tr.second)) {
+            reachable.add(tr.second);
+            findReachableStates(tr.second, reachable);
+        }
+    }
+}
+
+BitSubset DFA::unreachableStates() const {
+    BitSubset reachable(transitions.size());
+    reachable.add(initialState);
+    findReachableStates(initialState, reachable);
+    return ~reachable;
+}
+
+void DFA::removeUnreachableStates() {
+    BitSubset unreachable = unreachableStates();
+    for (int s = (int) lastState(); s >= 0; --s) {
+        if (unreachable.contains(s)) {
+            removeState(s);
+        }
+    }
+}

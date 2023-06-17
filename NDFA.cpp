@@ -178,7 +178,7 @@ BitSubset NDFA::unreachableStates() const {
 
 void NDFA::removeUnreachableStates() {
     BitSubset unreachable = unreachableStates();
-    for (int s = lastState(); s >= 0; --s) {
+    for (int s = (int) lastState(); s >= 0; --s) {
         if (unreachable.contains(s)) {
             removeState(s);
         }
