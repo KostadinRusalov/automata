@@ -155,6 +155,36 @@ void NDFA::makeTotal() {
     }
 }
 
+
+void NDFA::findReachableStates(State from, BitSubset &reachable) const {
+    for (auto &tr: transitions[from]) {
+        for (auto s: tr.second) {
+            if (!reachable.contains(s)) {
+                reachable.add(s);
+                findReachableStates(s, reachable);
+            }
+        }
+    }
+}
+
+BitSubset NDFA::unreachableStates() const {
+    BitSubset reachable(transitions.size());
+    reachable.add(initialStates);
+    for (auto initial: initialStates) {
+        findReachableStates(initial, reachable);
+    }
+    return ~reachable;
+}
+
+void NDFA::removeUnreachableStates() {
+    BitSubset unreachable = unreachableStates();
+    for (int s = lastState(); s >= 0; --s) {
+        if (unreachable.contains(s)) {
+            removeState(s);
+        }
+    }
+}
+
 int NDFA::accepts(NDFA::State from, const char *word) const {
     if (*word == '\0') {
         return finalStates.contains(from);
@@ -178,27 +208,6 @@ int NDFA::accepts(NDFA::State from, const char *word) const {
         }
     }
     return successPaths;
-}
-
-BitSubset NDFA::unreachableStates() const {
-    BitSubset reachable(transitions.size());
-
-    reachable.add(initialStates);
-    for (auto &stateTr: transitions) {
-        for (auto &tr: stateTr) {
-            reachable.add(tr.second);
-        }
-    }
-    return ~reachable;
-}
-
-void NDFA::removeUnreachableStates() {
-    BitSubset unreachable = unreachableStates();
-    for (State s = 0; s < transitions.size(); ++s) {
-        if (unreachable.contains(s)) {
-            removeState(s);
-        }
-    }
 }
 
 bool NDFA::accepts(const char *word) const {

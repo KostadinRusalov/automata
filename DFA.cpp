@@ -173,11 +173,10 @@ NDFA DFA::reverse() const {
     NDFA n(alphabet);
 
     BitSubset finals(finalStates.elements());
-
     for (State s = 0; s < transitions.size(); ++s) {
         auto q = n.addState();
         for (auto &tr: transitions[s]) {
-
+            n.addTransition(q, tr.first, tr.second);
         }
         if (finals.contains(s)) {
             n.makeInitialState(q);
@@ -186,5 +185,5 @@ NDFA DFA::reverse() const {
             n.makeFinalState(q);
         }
     }
-    return NDFA();
+    return n;
 }

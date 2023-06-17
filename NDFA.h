@@ -32,6 +32,8 @@ protected:
 
     void copyTransitions(State state, const Vector<Transition> &stateTr, State offsetIdx);
 
+    void findReachableStates(State from, BitSubset &reachable) const;
+
     BitSubset unreachableStates() const;
 
 public:
