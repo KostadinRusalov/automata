@@ -3,6 +3,10 @@
 #include "MyStructures/Set/Set.hpp"
 #include "MyStructures/BitSubset/BitSubset.h"
 
+class DFA;
+
+class NDFA;
+
 class Automata {
 public:
     typedef Set<char> Alphabet;

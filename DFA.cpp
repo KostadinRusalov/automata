@@ -1,4 +1,5 @@
 #include "DFA.h"
+#include "NDFA.h"
 
 #include "MyStructures/Algorithm.hpp"
 #include "SubtractOneAfter.hpp"
@@ -166,4 +167,24 @@ bool DFA::accepts(const char *word) const {
 
     return next != errorState() &&
            finalStates.contains(next);
+}
+
+NDFA DFA::reverse() const {
+    NDFA n(alphabet);
+
+    BitSubset finals(finalStates.elements());
+
+    for (State s = 0; s < transitions.size(); ++s) {
+        auto q = n.addState();
+        for (auto &tr: transitions[s]) {
+
+        }
+        if (finals.contains(s)) {
+            n.makeInitialState(q);
+        }
+        if (s == initialState) {
+            n.makeFinalState(q);
+        }
+    }
+    return NDFA();
 }

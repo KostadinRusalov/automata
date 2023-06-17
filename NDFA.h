@@ -2,7 +2,7 @@
 
 #include "Automata.h"
 #include "MyStructures/Pair/Pair.hpp"
-#include "CDFA.hpp"
+#include "DFA.h"
 
 class NDFA : public Automata {
 public:
