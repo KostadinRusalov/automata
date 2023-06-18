@@ -172,23 +172,20 @@ bool DFA::accepts(const char *word) const {
 NDFA DFA::reversed() const {
     NDFA rev(alphabet_);
 
-    State last = lastState();
-    auto mirror = [last](State s) { return last - s; };
-
     BitSubset finals(finalStates.elements());
-    for (State s = 0; s <= last; ++s) {
+    for (State s = 0; s <= lastState(); ++s) {
         rev.addState();
     }
 
-    for (State s = 0; s <= last; ++s) {
+    for (State s = 0; s <= lastState(); ++s) {
         for (auto &tr: transitions[s]) {
-            rev.addTransition(mirror(tr.second), tr.first, mirror(s));
+            rev.addTransition(tr.second, tr.first, s);
         }
         if (finals.contains(s)) {
-            rev.makeInitialState(mirror(s));
+            rev.makeInitialState(s);
         }
         if (s == initialState) {
-            rev.makeFinalState(mirror(s));
+            rev.makeFinalState(s);
         }
     }
 
