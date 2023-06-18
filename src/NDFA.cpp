@@ -453,3 +453,27 @@ NDFA operator*(const NDFA &rhs, const NDFA &lhs) {
     n *= lhs;
     return n;
 }
+
+void print(const NDFA &ndfa) {
+    using File::print;
+    print(ndfa.alphabet());
+
+    std::cout << "initial states: ";
+    print(ndfa.initialStates);
+
+    std::cout << "final states: ";
+    print(ndfa.finalStates);
+
+    for (size_t s = 0; s < ndfa.transitions.size(); ++s) {
+        std::cout << "q_" << s << ":";
+        for (auto &tr: ndfa.transitions[s]) {
+            std::cout << " " << tr.first << " -> { ";
+            for (auto st: tr.second) {
+                std::cout << st << ' ';
+            }
+            std::cout << "};";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}

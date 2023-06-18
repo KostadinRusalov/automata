@@ -11,5 +11,21 @@ public:
 private:
     CommandFactory() = default;
 
-    static Command *createNDFA() ;
+    static Command *createNDFA();
+
+    static Command *totalize();
+
+    static Command *determinize();
+
+    static Command *accepts();
+
+    static Command *isEmptyLanguage();
+
+    static Command *unionOf();
+
+    static Command *concat();
+
+    static Command *kleeneStar();
+
+    static Command *help();
 };

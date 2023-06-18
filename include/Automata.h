@@ -36,5 +36,4 @@ public:
     void addSymbols(const Alphabet &other);
 
     void removeSymbol(char s);
-
 };

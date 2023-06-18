@@ -13,3 +13,7 @@ void UI::showCommands() {
                  "9. help"
                  "10. quit" << std::endl;
 }
+
+void UI::invalidIndex() {
+    std::cout << "Invalid index!";
+}

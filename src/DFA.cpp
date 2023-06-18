@@ -319,3 +319,20 @@ DFA DFA::readFrom(std::ifstream &binaryFile) {
 
     return a;
 }
+
+void print(const DFA &dfa) {
+    using File::print;
+    print(dfa.alphabet());
+
+    std::cout << "initial state: " << dfa.initialState << std::endl;
+    std::cout << "final states: ";
+    print(dfa.finalStates);
+
+    for (size_t s = 0; s < dfa.transitions.size(); ++s) {
+        std::cout << "q_" << s << ":";
+        for (auto &tr: dfa.transitions[s]) {
+            std::cout << " " << tr.first << " -> q_" << tr.second << ';';
+        }
+        std::cout << std::endl;
+    }
+}

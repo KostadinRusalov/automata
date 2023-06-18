@@ -2,7 +2,7 @@
 
 #include "../../MyStructures/Set/Set.hpp"
 #include "../../MyStructures/Vector/Vector.hpp"
-
+#include <iostream>
 #include <fstream>
 
 namespace File {
@@ -48,5 +48,13 @@ namespace File {
         size_t size = vec.size();
         binaryFile.write((const char *) &size, sizeof(size));
         binaryFile.write((const char *) vec.data(), sizeof(T) * size);
+    }
+
+    template<class Arr>
+    void print(const Arr &arr) {
+        for (auto &el: arr) {
+            std::cout << el << " ";
+        }
+        std::cout << std::endl;
     }
 }
