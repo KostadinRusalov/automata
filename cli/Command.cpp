@@ -1,9 +1,11 @@
 #include "Command.h"
 #include "UI.h"
 
+Vector<NDFA> Command::automatas;
+
 CreateNDFA::CreateNDFA(const StringView &regex) : regex(regex) {}
 
-void Command::validate(size_t idx) const {
+bool Command::validate(size_t idx) const {
     if (idx >= automatas.size()) {
         UI::invalidIndex();
     }
@@ -17,7 +19,9 @@ void CreateNDFA::run() {
 Determinize::Determinize(size_t idx) : idx(idx) {}
 
 void Determinize::run() {
-    validate(idx);
+    if (!validate(idx)) {
+        return;
+    }
 
     DFA d = automatas[idx].determinized();
     print(d);
@@ -26,7 +30,9 @@ void Determinize::run() {
 Totalize::Totalize(size_t idx) : idx(idx) {}
 
 void Totalize::run() {
-    validate(idx);
+    if (!validate(idx)) {
+        return;
+    }
 
     automatas[idx].makeTotal();
     print(automatas[idx]);
@@ -36,7 +42,9 @@ Accepts::Accepts(size_t idx, const String &word)
         : idx(idx), word(word) {}
 
 void Accepts::run() {
-    validate(idx);
+    if (!validate(idx)) {
+        return;
+    }
 
     std::cout << automatas[idx].accepts(word.c_str());
 }
@@ -45,7 +53,9 @@ void Accepts::run() {
 IsEmptyLanguage::IsEmptyLanguage(size_t idx) : idx(idx) {}
 
 void IsEmptyLanguage::run() {
-    validate(idx);
+    if (!validate(idx)) {
+        return;
+    }
 
     std::cout << automatas[idx].isEmptyLanguage();
 }
@@ -53,8 +63,12 @@ void IsEmptyLanguage::run() {
 Union::Union(size_t rhs, size_t lhs) : rhs(rhs), lhs(lhs) {}
 
 void Union::run() {
-    validate(rhs);
-    validate(lhs);
+    if (!validate(rhs)) {
+        return;
+    }
+    if (!validate(lhs)) {
+        return;
+    }
 
     NDFA n = automatas[rhs] | automatas[lhs];
     automatas.pushBack(std::move(n));
@@ -64,8 +78,12 @@ void Union::run() {
 Concat::Concat(size_t rhs, size_t lhs) : rhs(rhs), lhs(lhs) {}
 
 void Concat::run() {
-    validate(rhs);
-    validate(lhs);
+    if (!validate(rhs)) {
+        return;
+    }
+    if (!validate(lhs)) {
+        return;
+    }
 
     NDFA n = automatas[rhs] * automatas[lhs];
     automatas.pushBack(std::move(n));
@@ -75,7 +93,9 @@ void Concat::run() {
 KleeneStar::KleeneStar(size_t idx) : idx(idx) {}
 
 void KleeneStar::run() {
-    validate(idx);
+    if (!validate(idx)) {
+        return;
+    }
 
     NDFA n = *automatas[idx];
     automatas.pushBack(std::move(n));

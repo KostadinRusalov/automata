@@ -6,9 +6,9 @@
 
 class Command {
 protected:
-    Vector<NDFA> automatas{};
+    static Vector<NDFA> automatas;
 
-    void validate(size_t idx) const;
+    bool validate(size_t idx) const;
 
 public:
     virtual ~Command() = default;
