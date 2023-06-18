@@ -169,23 +169,27 @@ bool DFA::accepts(const char *word) const {
            finalStates.contains(next);
 }
 
-NDFA DFA::reverse() const {
-    NDFA n(alphabet_);
+NDFA DFA::reversed() const {
+    NDFA rev(alphabet_);
+
+    State last = lastState();
+    auto mirror = [last](State s) { return last - s; };
 
     BitSubset finals(finalStates.elements());
-    for (State s = 0; s < transitions.size(); ++s) {
-        auto q = n.addState();
+    for (int s = (int) last; s >= 0; --s) {
+        rev.addState();
         for (auto &tr: transitions[s]) {
-            n.addTransition(q, tr.first, tr.second);
+            rev.addTransition(mirror(tr.second), tr.first, mirror(s));
         }
         if (finals.contains(s)) {
-            n.makeInitialState(q);
+            rev.makeInitialState(mirror(s));
         }
         if (s == initialState) {
-            n.makeFinalState(q);
+            rev.makeFinalState(mirror(s));
         }
     }
-    return n;
+
+    return rev;
 }
 
 void DFA::findReachableStates(Automata::State from, BitSubset &reachable) const {

@@ -362,6 +362,15 @@ DFA NDFA::determinized() const {
     return d;
 }
 
+NDFA NDFA::reversed() const {
+    NDFA rev(alphabet_);
+
+    BitSubset initials(finalStates.elements());
+    BitSubset finals(finalStates.elements());
+    
+    return rev;
+}
+
 NDFA operator+(const NDFA &rhs, const NDFA &lhs) {
     NDFA n(rhs);
     n += lhs;

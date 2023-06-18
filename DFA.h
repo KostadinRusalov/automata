@@ -54,7 +54,7 @@ public:
 
     bool accepts(const char *word) const;
 
-    NDFA reverse() const;
+    NDFA reversed() const;
 
     friend void print(const DFA &dfa);
 };

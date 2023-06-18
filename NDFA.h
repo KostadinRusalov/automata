@@ -89,6 +89,7 @@ public:
 
     DFA determinized() const;
 
+    NDFA reversed() const;
     friend void print(const NDFA &ndfa);
 };
 
