@@ -95,6 +95,10 @@ public:
 
     bool isEmptyLanguage() const;
 
+    void saveTo(std::ofstream &binaryFile) const;
+
+    static NDFA readFrom(std::ifstream &binaryFile);
+
     friend void print(const NDFA &ndfa);
 };
 

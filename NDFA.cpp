@@ -2,6 +2,8 @@
 #include "SubtractOneAfter.hpp"
 #include "MyStructures/Queue/Queue.hpp"
 #include "CDFA.hpp"
+#include "fstream"
+#include "File.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet_!";
@@ -387,6 +389,51 @@ bool NDFA::isEmptyLanguage() const {
     auto unreachable = unreachableStates();
     return kstd::allOf(finalStates.begin(), finalStates.end(),
                        [unreachable](State s) { return unreachable.contains(s); });
+}
+
+void NDFA::saveTo(std::ofstream &binaryFile) const {
+    saveAlphabetTo(binaryFile);
+
+    size_t statesCount = transitions.size();
+    binaryFile.write((const char *) &statesCount, sizeof(size_t));
+
+    for (auto &stateTr: transitions) {
+        size_t trCount = stateTr.size();
+        binaryFile.write((const char *) &trCount, sizeof(size_t));
+
+        for (auto &tr: stateTr) {
+            char with = tr.first;
+            binaryFile.write((const char *) &with, sizeof(char));
+            File::saveSet(binaryFile, tr.second);
+        }
+    }
+
+    File::saveSet(binaryFile, initialStates);
+    File::saveSet(binaryFile, finalStates);
+}
+
+NDFA NDFA::readFrom(std::ifstream &binaryFile) {
+    NDFA n;
+    n.readAlphabetFrom(binaryFile);
+
+    size_t statesCount;
+    binaryFile.read((char *) &statesCount, sizeof(size_t));
+    for (size_t s = 0; s < statesCount; ++s) {
+        n.addState();
+        size_t trCount;
+        binaryFile.read((char *) &trCount, sizeof(size_t));
+
+        for (size_t t = 0; t < trCount; ++t) {
+            n.transitions[s].pushBack({});
+            auto &tr = n.transitions[s][t];
+            binaryFile.read((char *) &tr.first, sizeof(char));
+            File::readSet(binaryFile, tr.second);
+        }
+    }
+
+    File::readSet(binaryFile, n.initialStates);
+    File::readSet(binaryFile, n.finalStates);
+    return n;
 }
 
 NDFA operator+(const NDFA &rhs, const NDFA &lhs) {

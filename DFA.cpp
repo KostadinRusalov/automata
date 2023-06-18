@@ -291,8 +291,8 @@ void DFA::saveTo(std::ofstream &binaryFile) const {
     size_t statesCount = transitions.size();
     binaryFile.write((const char *) &statesCount, sizeof(size_t));
 
-    for (auto &tr: transitions) {
-        File::saveVector(binaryFile, tr);
+    for (auto &stateTr: transitions) {
+        File::saveVector(binaryFile, stateTr);
     }
 
     binaryFile.write((const char *) &initialState, sizeof(State));
