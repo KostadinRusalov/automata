@@ -379,6 +379,16 @@ DFA NDFA::minimized() const {
     return determinized().reversed().determinized().reversed().determinized();
 }
 
+bool NDFA::isEmptyLanguage() const {
+    if (initialStates.empty() || finalStates.empty()) {
+        return true;
+    }
+
+    auto unreachable = unreachableStates();
+    return kstd::allOf(finalStates.begin(), finalStates.end(),
+                       [unreachable](State s) { return unreachable.contains(s); });
+}
+
 NDFA operator+(const NDFA &rhs, const NDFA &lhs) {
     NDFA n(rhs);
     n += lhs;

@@ -220,3 +220,13 @@ void DFA::removeUnreachableStates() {
 DFA DFA::minimized() const {
     return reversed().determinized().reversed().determinized();
 }
+
+bool DFA::isEmptyLanguage() const {
+    if (initialState == errorState() || finalStates.empty()) {
+        return true;
+    }
+
+    auto unreachable = unreachableStates();
+    return kstd::allOf(finalStates.begin(), finalStates.end(),
+                       [unreachable](State s) { return unreachable.contains(s); });
+}

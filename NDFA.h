@@ -93,6 +93,7 @@ public:
 
     DFA minimized() const;
 
+    bool isEmptyLanguage() const;
     friend void print(const NDFA &ndfa);
 };
 
