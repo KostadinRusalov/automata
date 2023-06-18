@@ -46,6 +46,8 @@ public:
 
     NDFA toNDFA() const;
 
+    String toString() const;
+
 private:
     void free();
 
@@ -68,11 +70,11 @@ enum class Regex::Symbol {
 
 class Regex::Expression {
 public:
-    virtual NDFA toNDFA() = 0;
+    virtual NDFA toNDFA() const = 0;
 
-    virtual String toString() = 0;
+    virtual String toString() const = 0;
 
-    virtual Expression *clone() = 0;
+    virtual Expression *clone() const = 0;
 
     virtual ~Expression() = default;
 };
@@ -92,11 +94,11 @@ class Regex::Union : public Regex::Binary {
 public:
     Union(Expression *rhs, Expression *lhs);
 
-    NDFA toNDFA() override;
+    NDFA toNDFA() const override;
 
-    String toString() override;
+    String toString() const override;
 
-    Expression *clone() override;
+    Expression *clone() const override;
 
     ~Union() override = default;
 };
@@ -105,11 +107,11 @@ class Regex::Concat : public Regex::Binary {
 public:
     Concat(Expression *rhs, Expression *lhs);
 
-    NDFA toNDFA() override;
+    NDFA toNDFA() const override;
 
-    String toString() override;
+    String toString() const override;
 
-    Expression *clone() override;
+    Expression *clone() const override;
 
     ~Concat() override = default;
 };
@@ -121,11 +123,11 @@ private:
 public:
     KleeneStar(Expression *expression);
 
-    NDFA toNDFA() override;
+    NDFA toNDFA() const override;
 
-    String toString() override;
+    String toString() const override;
 
-    Expression *clone() override;
+    Expression *clone() const override;
 
     ~KleeneStar() override;
 };
@@ -137,11 +139,11 @@ private:
 public:
     Letter(char letter);
 
-    NDFA toNDFA() override;
+    NDFA toNDFA() const override;
 
-    String toString() override;
+    String toString() const override;
 
-    Expression *clone() override;
+    Expression *clone() const override;
 
     ~Letter() override = default;
 };
@@ -153,11 +155,11 @@ private:
 public:
     Word(const StringView &word);
 
-    NDFA toNDFA() override;
+    NDFA toNDFA() const override;
 
-    String toString() override;
+    String toString() const override;
 
-    Expression *clone() override;
+    Expression *clone() const override;
 
     ~Word() override = default;
 };
@@ -166,11 +168,11 @@ class Regex::EmptyWord : public Regex::Expression {
 public:
     EmptyWord() = default;
 
-    NDFA toNDFA() override;
+    NDFA toNDFA() const override;
 
-    String toString() override;
+    String toString() const override;
 
-    Expression *clone() override;
+    Expression *clone() const override;
 
     ~EmptyWord() override = default;
 };
@@ -179,11 +181,11 @@ class Regex::EmptyLanguage : public Regex::Expression {
 public:
     EmptyLanguage() = default;
 
-    NDFA toNDFA() override;
+    NDFA toNDFA() const override;
 
-    String toString() override;
+    String toString() const override;
 
-    Expression *clone() override;
+    Expression *clone() const override;
 
     ~EmptyLanguage() override = default;
 };
