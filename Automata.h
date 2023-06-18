@@ -7,6 +7,8 @@ class DFA;
 
 class NDFA;
 
+class GNFA;
+
 class Automata {
 public:
     typedef Set<char> Alphabet;
@@ -30,4 +32,5 @@ public:
     void addSymbols(const Alphabet &other);
 
     void removeSymbol(char s);
+
 };

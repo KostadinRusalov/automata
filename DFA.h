@@ -27,6 +27,8 @@ protected:
 
     BitSubset unreachableStates() const;
 
+    static Vector<Transition>::const_iterator findTransition(const Vector<Transition> &stateTr, char with);
+
 public:
     State errorState() const;
 
@@ -52,6 +54,8 @@ public:
 
     void makeTotal();
 
+    DFA total() const;
+
     void removeUnreachableStates();
 
     bool accepts(const char *word) const;
@@ -64,11 +68,13 @@ public:
 
     DFA operator!() const;
 
-    DFA &operator|=(const DFA &other);
-
-    DFA &operator&=(const DFA &other);
-
-    DFA &operator/=(const DFA &other);
+    friend DFA operator&(const DFA &rhs, const DFA &lhs);
 
     friend void print(const DFA &dfa);
 };
+
+DFA operator|(const DFA &rhs, const DFA &lhs);
+
+DFA operator/(const DFA &rhs, const DFA &lhs);
+
+DFA operator&(const DFA &rhs, const DFA &lhs);

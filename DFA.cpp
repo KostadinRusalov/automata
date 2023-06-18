@@ -2,6 +2,7 @@
 #include "NDFA.h"
 
 #include "MyStructures/Algorithm.hpp"
+#include "MyStructures/Queue/Queue.hpp"
 #include "SubtractOneAfter.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
@@ -244,4 +245,31 @@ DFA DFA::operator!() const {
         }
     }
     return complement;
+}
+
+DFA operator|(const DFA &rhs, const DFA &lhs) {
+    return !(!rhs & !lhs);
+}
+
+DFA operator/(const DFA &rhs, const DFA &lhs) {
+    return rhs & !lhs;
+}
+
+DFA operator&(const DFA &rhs, const DFA &lhs) {
+   // TODO
+}
+
+DFA DFA::total() const {
+    DFA t(*this);
+    t.makeTotal();
+    return t;
+}
+
+Vector<DFA::Transition>::const_iterator DFA::findTransition(const Vector<Transition> &stateTr, char with) {
+    return kstd::findIf(
+            stateTr.begin(), stateTr.end(),
+            [with](const Transition &tr) {
+                return tr.first == with;
+            }
+    );
 }
