@@ -212,7 +212,9 @@ NDFA Regex::Letter::toNDFA() const {
 }
 
 String Regex::Letter::toString() const {
-    return String(letter);
+    String s;
+    s += letter;
+    return s;
 }
 
 Regex::Expression *Regex::Letter::clone() const {
