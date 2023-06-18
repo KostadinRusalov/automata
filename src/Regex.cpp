@@ -149,7 +149,7 @@ Regex::Expression *Regex::parse(const StringView &expr) {
                             throw std::invalid_argument("invalid expression!");
                         case (char) Symbol::Union:
                             return new Union(new KleeneStar(parse(expr.substr(1, count))),
-                                             parse(expr.substr(balanced + 3)));
+                                             parse(expr.substr(balanced + 2)));
                         default:
                             return new Concat(new KleeneStar(parse(expr.substr(1, count))),
                                               parse(expr.substr(balanced + 2)));
