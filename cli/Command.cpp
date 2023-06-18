@@ -1,3 +1,6 @@
-//
-// Created by Kostadin Roussalov on 18.06.23.
-//
+#include "Command.h"
+#include "../include/Regex.h"
+
+CreateNDFA::CreateNDFA(const StringView &regex) {
+
+}
