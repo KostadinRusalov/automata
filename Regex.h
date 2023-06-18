@@ -76,11 +76,7 @@ public:
 
     virtual Expression *clone() const = 0;
 
-    virtual bool isSimple() const = 0;
-
     virtual ~Expression() = default;
-
-    static String addBrackets(Expression *expr);
 };
 
 class Regex::Binary : public Regex::Expression {
@@ -104,8 +100,6 @@ public:
 
     Expression *clone() const override;
 
-    bool isSimple() const override;
-
     ~Union() override = default;
 };
 
@@ -118,8 +112,6 @@ public:
     String toString() const override;
 
     Expression *clone() const override;
-
-    bool isSimple() const override;
 
     ~Concat() override = default;
 };
@@ -137,8 +129,6 @@ public:
 
     Expression *clone() const override;
 
-    bool isSimple() const override;
-
     ~KleeneStar() override;
 };
 
@@ -155,28 +145,9 @@ public:
 
     Expression *clone() const override;
 
-    bool isSimple() const override;
-
     ~Letter() override = default;
 };
 
-class Regex::Word : public Regex::Expression {
-private:
-    StringView word;
-
-public:
-    Word(const StringView &word);
-
-    NDFA toNDFA() const override;
-
-    String toString() const override;
-
-    Expression *clone() const override;
-
-    bool isSimple() const override;
-
-    ~Word() override = default;
-};
 
 class Regex::EmptyWord : public Regex::Expression {
 public:
@@ -187,8 +158,6 @@ public:
     String toString() const override;
 
     Expression *clone() const override;
-
-    bool isSimple() const override;
 
     ~EmptyWord() override = default;
 };
@@ -202,8 +171,6 @@ public:
     String toString() const override;
 
     Expression *clone() const override;
-
-    bool isSimple() const override;
 
     ~EmptyLanguage() override = default;
 };
