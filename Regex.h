@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NDFA.h"
-#include "MyStructures/String/String.h"
+#include "MyStructures/StringView/StringView.h"
 
 class Regex {
 private:
@@ -15,7 +15,7 @@ private:
 
     class KleeneStar;
 
-    class Word;
+    class Letter;
 
     class EmptyWord;
 
@@ -26,7 +26,7 @@ private:
 public:
     Regex();
 
-    Regex(const String &regex);
+    Regex(const StringView &regex);
 
     Regex(const Regex &other);
 
@@ -45,7 +45,7 @@ private:
 
     void moveFrom(Regex &&other);
 
-    static Expression *parse(const String &expression);
+    static Expression *parse(const StringView &expression);
 };
 
 class Regex::Expression {
@@ -104,20 +104,18 @@ public:
     ~KleeneStar() override;
 };
 
-class Regex::Word : public Regex::Expression {
+class Regex::Letter : public Regex::Expression {
 private:
-    String word;
+    char letter;
 
 public:
-    Word(const String &word);
-
-    Word(String &&word);
+    Letter(char letter);
 
     NDFA createNDFA() override;
 
     Expression *clone() override;
 
-    ~Word() override = default;
+    ~Letter() override = default;
 };
 
 class Regex::EmptyWord : public Regex::Expression {

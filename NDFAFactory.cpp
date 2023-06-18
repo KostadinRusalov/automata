@@ -42,6 +42,15 @@ NDFA NDFAFactory::exact(const char *word) {
     return n;
 }
 
+NDFA NDFAFactory::exact(char letter) {
+    NDFA n;
+    auto q = n.addInitialState();
+    auto f = n.addFinalState();
+    n.addTransition(q, letter, f);
+
+    return n;
+}
+
 NDFA NDFAFactory::prefix(const Automata::Alphabet &alphabet, const char *word) {
     NDFA n(alphabet);
 

@@ -5,7 +5,7 @@ Regex::Regex() {
     expression = new EmptyLanguage();
 }
 
-Regex::Regex(const String &regex) {
+Regex::Regex(const StringView &regex) {
     expression = parse(regex);
 }
 
@@ -50,7 +50,7 @@ void Regex::moveFrom(Regex &&other) {
     other.expression = nullptr;
 }
 
-Regex::Expression *Regex::parse(const String &expression) {
+Regex::Expression *Regex::parse(const StringView &expr) {
     return nullptr;
 }
 
@@ -61,7 +61,6 @@ Regex::Binary::~Binary() {
     delete rhs;
     delete lhs;
 }
-
 
 Regex::Union::Union(Regex::Expression *rhs, Regex::Expression *lhs)
         : Binary(rhs, lhs) {}
@@ -100,17 +99,14 @@ Regex::KleeneStar::~KleeneStar() {
     delete expr;
 }
 
+Regex::Letter::Letter(char letter) : letter(letter) {}
 
-Regex::Word::Word(const String &word) : word(word) {}
-
-Regex::Word::Word(String &&word) : word(std::move(word)) {}
-
-NDFA Regex::Word::createNDFA() {
-    return NDFAFactory::exact(word.c_str());
+NDFA Regex::Letter::createNDFA() {
+    return NDFAFactory::exact(letter);
 }
 
-Regex::Expression *Regex::Word::clone() {
-    return new Word(word);
+Regex::Expression *Regex::Letter::clone() {
+    return new Letter(letter);
 }
 
 NDFA Regex::EmptyWord::createNDFA() {

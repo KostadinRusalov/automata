@@ -7,6 +7,8 @@ namespace NDFAFactory {
 
     NDFA exact(const char *word);
 
+    NDFA exact(char letter);
+
     NDFA prefix(const NDFA::Alphabet &alphabet, const char *word);
 
     NDFA prefix(const char *word);
