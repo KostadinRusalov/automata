@@ -176,8 +176,11 @@ NDFA DFA::reversed() const {
     auto mirror = [last](State s) { return last - s; };
 
     BitSubset finals(finalStates.elements());
-    for (int s = (int) last; s >= 0; --s) {
+    for (State s = 0; s <= last; ++s) {
         rev.addState();
+    }
+
+    for (State s = 0; s <= last; ++s) {
         for (auto &tr: transitions[s]) {
             rev.addTransition(mirror(tr.second), tr.first, mirror(s));
         }
@@ -215,4 +218,8 @@ void DFA::removeUnreachableStates() {
             removeState(s);
         }
     }
+}
+
+DFA DFA::minimized() const {
+    return reversed().determinized().reversed().determinized();
 }

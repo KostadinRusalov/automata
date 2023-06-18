@@ -56,5 +56,7 @@ public:
 
     NDFA reversed() const;
 
+    DFA minimized() const;
+
     friend void print(const DFA &dfa);
 };

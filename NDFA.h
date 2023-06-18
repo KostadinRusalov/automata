@@ -90,6 +90,9 @@ public:
     DFA determinized() const;
 
     NDFA reversed() const;
+
+    DFA minimized() const;
+
     friend void print(const NDFA &ndfa);
 };
 

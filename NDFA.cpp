@@ -367,8 +367,12 @@ NDFA NDFA::reversed() const {
 
     BitSubset initials(finalStates.elements());
     BitSubset finals(finalStates.elements());
-    
+
     return rev;
+}
+
+DFA NDFA::minimized() const {
+    return determinized().reversed().determinized().reversed().determinized();
 }
 
 NDFA operator+(const NDFA &rhs, const NDFA &lhs) {
