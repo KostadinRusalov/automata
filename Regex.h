@@ -64,7 +64,6 @@ enum class Regex::Symbol {
     OpenBracket = '(',
     CloseBracket = ')',
     Union = '+',
-    Concat = '.',
     Star = '*'
 };
 

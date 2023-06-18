@@ -105,7 +105,7 @@ Regex::Expression *Regex::simpleParse(const StringView &expr) {
                          simpleParse(expr.substr(uPos + 1)));
     }
 
-    size_t cPos = expr.find((char) Symbol::Concat);
+    size_t cPos = expr.find((char) Symbol::CloseBracket);
     if (cPos != String::npos) {
         return new Concat(simpleParse(expr.substr(0, cPos)),
                           simpleParse(expr.substr(cPos + 1)));
@@ -127,7 +127,44 @@ Regex::Expression *Regex::parse(const StringView &expr) {
         return new Letter(expr.front());
     }
 
+    if (expr.front() == (char) Symbol::OpenBracket) {
+        size_t balanced = findBalancedBracket(0, expr);
+        if (balanced == String::npos) {
+            throw std::invalid_argument("invalid expression!");
+        }
 
+        size_t count = balanced - 1;
+        if (balanced + 1 == expr.size()) {
+            return parse(expr.substr(1, count));
+        }
+
+        switch (expr[balanced + 1]) {
+            case (char) Symbol::Star:
+                if (balanced + 2 == expr.size()) {
+                    return new KleeneStar(parse(expr.substr(1, count)));
+                } else {
+                    switch (expr[balanced + 2]) {
+                        case (char) Symbol::Star:
+                        case (char) Symbol::CloseBracket:
+                            throw std::invalid_argument("invalid expression!");
+                        case (char) Symbol::Union:
+                            return new Union(new KleeneStar(parse(expr.substr(1, count))),
+                                             parse(expr.substr(balanced + 3)));
+                        default:
+                            return new Concat(new KleeneStar(parse(expr.substr(1, count))),
+                                              parse(expr.substr(balanced + 2)));
+                    }
+                }
+            case (char) Symbol::Union:
+                return new Union(parse(expr.substr(1, count)), parse(expr.substr(balanced + 2)));
+            case (char) Symbol::CloseBracket:
+                throw std::invalid_argument("invalid expression!");
+            default:
+                return new Concat(parse(expr.substr(1, count)), parse(expr.substr(balanced + 1)));
+        }
+    }
+
+    return new Concat(parse(expr.substr(0, 1)), parse(expr.substr(1)));
 }
 
 Regex::Binary::Binary(Expression *rhs, Expression *lhs)
@@ -144,7 +181,6 @@ Regex::Union::Union(Regex::Expression *rhs, Regex::Expression *lhs)
 NDFA Regex::Union::toNDFA() const {
     return rhs->toNDFA() | lhs->toNDFA();
 }
-
 
 String Regex::Union::toString() const {
     return "(" + rhs->toString() + "+" + lhs->toString() + ")";
@@ -188,7 +224,8 @@ Regex::KleeneStar::~KleeneStar() {
     delete expr;
 }
 
-Regex::Letter::Letter(char letter) : letter(letter) {}
+Regex::Letter::Letter(char
+                      letter) : letter(letter) {}
 
 NDFA Regex::Letter::toNDFA() const {
     return NDFAFactory::exact(letter);
@@ -209,7 +246,7 @@ NDFA Regex::EmptyWord::toNDFA() const {
 }
 
 String Regex::EmptyWord::toString() const {
-    return {"\\e"};
+    return {""};
 }
 
 Regex::Expression *Regex::EmptyWord::clone() const {
