@@ -10,7 +10,7 @@ void UI::showCommands() {
                  "6. union <idx> <idx>\n"
                  "7. concat <idx> <idx>\n"
                  "8. kleeneStar <idx>\n"
-                 "9. help"
+                 "9. help\n"
                  "10. quit" << std::endl;
 }
 
