@@ -8,6 +8,8 @@ public:
     typedef Pair<char, State> Transition;
     typedef Vector<Vector<Transition>> TransitionCollection;
 
+    friend class GNFA;
+
 protected:
     State initialState;
     StateCollection finalStates;
@@ -57,6 +59,16 @@ public:
     NDFA reversed() const;
 
     DFA minimized() const;
+
+    bool isEmptyLanguage() const;
+
+    DFA operator!() const;
+
+    DFA &operator|=(const DFA &other);
+
+    DFA &operator&=(const DFA &other);
+
+    DFA &operator/=(const DFA &other);
 
     friend void print(const DFA &dfa);
 };
