@@ -282,7 +282,7 @@ NDFA &NDFA::operator*=(const NDFA &other) {
     return *this;
 }
 
-NDFA NDFA::operator*() {
+NDFA NDFA::operator*() const {
     NDFA n(*this);
 
     n.initialStates.clear();

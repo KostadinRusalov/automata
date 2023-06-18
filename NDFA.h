@@ -85,7 +85,7 @@ public:
 
     NDFA &operator*=(const NDFA &other);
 
-    NDFA operator*();
+    NDFA operator*() const;
 
     DFA determinized() const;
 
@@ -94,6 +94,7 @@ public:
     DFA minimized() const;
 
     bool isEmptyLanguage() const;
+
     friend void print(const NDFA &ndfa);
 };
 

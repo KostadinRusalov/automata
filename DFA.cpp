@@ -230,3 +230,18 @@ bool DFA::isEmptyLanguage() const {
     return kstd::allOf(finalStates.begin(), finalStates.end(),
                        [unreachable](State s) { return unreachable.contains(s); });
 }
+
+DFA DFA::operator!() const {
+    DFA complement(*this);
+    complement.makeTotal();
+
+    complement.finalStates.clear();
+    BitSubset finals(finalStates.elements());
+
+    for (State s = 0; s <= complement.lastState(); ++s) {
+        if (!finals.contains(s)) {
+            complement.makeFinalState(s);
+        }
+    }
+    return complement;
+}
