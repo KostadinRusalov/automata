@@ -44,6 +44,8 @@ NDFA NDFAFactory::exact(const char *word) {
 
 NDFA NDFAFactory::exact(char letter) {
     NDFA n;
+    n.addSymbol(letter);
+
     auto q = n.addInitialState();
     auto f = n.addFinalState();
     n.addTransition(q, letter, f);
