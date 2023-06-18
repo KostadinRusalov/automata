@@ -172,11 +172,11 @@ bool DFA::accepts(const char *word) const {
 NDFA DFA::reversed() const {
     NDFA rev(alphabet_);
 
-    BitSubset finals(finalStates.elements());
     for (State s = 0; s <= lastState(); ++s) {
         rev.addState();
     }
 
+    BitSubset finals(finalStates.elements());
     for (State s = 0; s <= lastState(); ++s) {
         for (auto &tr: transitions[s]) {
             rev.addTransition(tr.second, tr.first, s);

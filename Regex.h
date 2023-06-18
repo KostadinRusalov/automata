@@ -4,7 +4,9 @@
 #include "MyStructures/StringView/StringView.h"
 
 class Regex {
-private:
+public:
+    enum class Symbol;
+
     class Expression;
 
     class Binary;
@@ -17,14 +19,18 @@ private:
 
     class Letter;
 
+    class Word;
+
     class EmptyWord;
 
     class EmptyLanguage;
 
-    Expression *expression;
+    Expression *expr;
 
 public:
     Regex();
+
+    Regex(Expression *expression);
 
     Regex(const StringView &regex);
 
@@ -38,6 +44,8 @@ public:
 
     ~Regex();
 
+    NDFA createNDFA() const;
+
 private:
     void free();
 
@@ -46,6 +54,14 @@ private:
     void moveFrom(Regex &&other);
 
     static Expression *parse(const StringView &expression);
+};
+
+enum class Regex::Symbol {
+    OpenBracket = '(',
+    CloseBracket = ')',
+    Union = '+',
+    Concat = '.',
+    Star = '*'
 };
 
 class Regex::Expression {
@@ -116,6 +132,20 @@ public:
     Expression *clone() override;
 
     ~Letter() override = default;
+};
+
+class Regex::Word : public Regex::Expression {
+private:
+    StringView word;
+
+public:
+    Word(const StringView &word);
+
+    NDFA createNDFA() override;
+
+    Expression *clone() override;
+
+    ~Word() override = default;
 };
 
 class Regex::EmptyWord : public Regex::Expression {

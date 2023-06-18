@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <utility>
 #include <stdexcept>
-#include "VectorIterator.hpp"
+#include "../ArrayIterator/ArrayIterator.hpp"
 
 template<class T>
 class Vector {
@@ -15,8 +15,8 @@ public:
     typedef const T &const_reference;
     typedef T *pointer;
     typedef const T *const_pointer;
-    typedef VectorIterator<value_type> iterator;
-    typedef VectorIterator<const value_type> const_iterator;
+    typedef ArrayIterator<value_type> iterator;
+    typedef ArrayIterator<const value_type> const_iterator;
 
 private:
     pointer data_;

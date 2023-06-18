@@ -1,5 +1,8 @@
 #include "StringView.h"
 #include <cstring>
+#include "../Algorithm.hpp"
+
+StringView::StringView() : begin_{}, end_{} {}
 
 StringView::StringView(StringView::const_pointer begin, StringView::const_pointer end)
         : begin_{begin}, end_{end} {}
@@ -86,6 +89,11 @@ std::ostream &operator<<(std::ostream &os, const StringView &strView) {
     return os;
 }
 
-StringView operator ""sv(const char *str) {
+StringView operator ""sv(const char *str, size_t len) {
     return {str};
+}
+
+StringView::size_type StringView::find(char c, size_type start) const {
+    auto it = kstd::find(begin() + start, end(), c);
+    return it == end() ? String::npos : it - (begin() + start);
 }

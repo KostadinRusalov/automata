@@ -53,6 +53,24 @@ NDFA NDFAFactory::exact(char letter) {
     return n;
 }
 
+NDFA NDFAFactory::exact(const StringView &word) {
+    if (word.empty()) {
+        return NDFAFactory::emptyWord();
+    }
+
+    NDFA n;
+    auto q = n.addInitialState();
+    for (char s: word) {
+        n.addSymbol(s);
+        auto next = n.addState();
+        n.addTransition(q, s, next);
+        q = next;
+    }
+
+    n.makeFinalState(q);
+    return n;
+}
+
 NDFA NDFAFactory::prefix(const Automata::Alphabet &alphabet, const char *word) {
     NDFA n(alphabet);
 

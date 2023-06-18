@@ -19,7 +19,7 @@ private:
     const_pointer end_;
 
 public:
-    StringView() = default;
+    StringView();
 
     StringView(const_pointer begin, const_pointer end);
 
@@ -59,8 +59,9 @@ public:
 
     StringView substr(size_type pos, size_type count) const;
 
+    size_type find(char c, size_type start = 0) const;
 };
 
 std::ostream &operator<<(std::ostream &os, const StringView &strView);
 
-StringView operator ""sv(const char *str);
+StringView operator ""sv(const char *str, size_t len);
