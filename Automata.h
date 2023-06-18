@@ -18,6 +18,10 @@ public:
 protected:
     Alphabet alphabet_;
 
+    void saveAlphabetTo(std::ofstream &binaryFile) const;
+
+    void readAlphabetFrom(std::ifstream &binaryFile);
+
 public:
     virtual ~Automata() = default;
 

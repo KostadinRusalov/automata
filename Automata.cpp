@@ -1,4 +1,6 @@
 #include "Automata.h"
+#include <fstream>
+#include "File.hpp"
 
 void Automata::setAlphabet(const Alphabet &alphabet) {
     alphabet_ = alphabet;
@@ -26,4 +28,11 @@ const Automata::Alphabet &Automata::alphabet() const {
     return alphabet_;
 }
 
+void Automata::saveAlphabetTo(std::ofstream &binaryFile) const {
+    File::saveSet<char>(binaryFile, alphabet_);
+}
+
+void Automata::readAlphabetFrom(std::ifstream &binaryFile) {
+    File::readSet<char>(binaryFile, alphabet_);
+}
 

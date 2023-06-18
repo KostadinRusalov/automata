@@ -30,6 +30,12 @@ protected:
     static Vector<Transition>::const_iterator findTransition(const Vector<Transition> &stateTr, char with);
 
 public:
+    DFA() = default;
+
+    explicit DFA(const Alphabet &alphabet);
+
+    explicit DFA(Alphabet &&alphabet);
+
     State errorState() const;
 
     State addState();
@@ -67,6 +73,10 @@ public:
     bool isEmptyLanguage() const;
 
     DFA operator!() const;
+
+    void saveTo(std::ofstream &binaryFile) const;
+
+    static DFA readFrom(std::ifstream &binaryFile);
 
     friend DFA operator&(const DFA &rhs, const DFA &lhs);
 

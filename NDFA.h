@@ -44,9 +44,9 @@ protected:
 public:
     NDFA() = default;
 
-    NDFA(const Alphabet &alphabet);
+    explicit NDFA(const Alphabet &alphabet);
 
-    NDFA(Alphabet &&alphabet);
+    explicit NDFA(Alphabet &&alphabet);
 
     // State logic
     State addState();

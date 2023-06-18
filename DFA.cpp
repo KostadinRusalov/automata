@@ -4,9 +4,19 @@
 #include "MyStructures/Algorithm.hpp"
 #include "MyStructures/Queue/Queue.hpp"
 #include "SubtractOneAfter.hpp"
+#include <fstream>
+#include "File.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet_!";
+
+DFA::DFA(const Automata::Alphabet &alphabet) {
+    alphabet_ = alphabet;
+}
+
+DFA::DFA(Automata::Alphabet &&alphabet) {
+    alphabet_ = std::move(alphabet);
+}
 
 DFA::State DFA::lastState() const {
     return transitions.size() - 1;
@@ -256,7 +266,7 @@ DFA operator/(const DFA &rhs, const DFA &lhs) {
 }
 
 DFA operator&(const DFA &rhs, const DFA &lhs) {
-   // TODO
+    // TODO
 }
 
 DFA DFA::total() const {
@@ -272,4 +282,37 @@ Vector<DFA::Transition>::const_iterator DFA::findTransition(const Vector<Transit
                 return tr.first == with;
             }
     );
+}
+
+
+void DFA::saveTo(std::ofstream &binaryFile) const {
+    saveAlphabetTo(binaryFile);
+
+    size_t statesCount = transitions.size();
+    binaryFile.write((const char *) &statesCount, sizeof(size_t));
+
+    for (auto &tr: transitions) {
+        File::saveVector(binaryFile, tr);
+    }
+
+    binaryFile.write((const char *) &initialState, sizeof(State));
+    File::saveSet(binaryFile, finalStates);
+}
+
+DFA DFA::readFrom(std::ifstream &binaryFile) {
+    DFA a;
+    a.readAlphabetFrom(binaryFile);
+
+    size_t statesCount;
+    binaryFile.read((char *) &statesCount, sizeof(size_t));
+
+    for (size_t s = 0; s < statesCount; ++s) {
+        a.addState();
+        File::readVector(binaryFile, a.transitions[s]);
+    }
+
+    binaryFile.read((char *) &a.initialState, sizeof(State));
+    File::readSet(binaryFile, a.finalStates);
+
+    return a;
 }
