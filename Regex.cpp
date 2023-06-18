@@ -128,24 +128,7 @@ Regex::Expression *Regex::parse(const StringView &expr) {
         return new Letter(expr.front());
     }
 
-    size_t innermost = findInnermostBracket(expr);
 
-    if (innermost == String::npos) {
-        return simpleParse(expr);
-    }
-
-    size_t balanced = findBalancedBracket(innermost, expr);
-    if (balanced == String::npos) {
-        throw std::invalid_argument("invalid expression");
-    }
-
-    if (balanced == expr.size() - 1) {
-        // todo
-    }
-    switch (expr[balanced + 1]) {
-
-    }
-    return nullptr;
 }
 
 Regex::Binary::Binary(Expression *rhs, Expression *lhs)
@@ -163,8 +146,19 @@ NDFA Regex::Union::toNDFA() const {
     return rhs->toNDFA() | lhs->toNDFA();
 }
 
+String Regex::Expression::addBrackets(Regex::Expression *expr) {
+    if (expr->isSimple()) {
+        return expr->toString();
+    }
+    return "(" + expr->toString() + ")";
+}
+
 String Regex::Union::toString() const {
-    return "(" + rhs->toString() + ")+(" + lhs->toString() + ")";
+    return Expression::addBrackets(rhs) + "+" + Expression::addBrackets(lhs);
+}
+
+bool Regex::Union::isSimple() const {
+    return false;
 }
 
 Regex::Expression *Regex::Union::clone() const {
@@ -179,11 +173,15 @@ NDFA Regex::Concat::toNDFA() const {
 }
 
 String Regex::Concat::toString() const {
-    return "(" + rhs->toString() + ").(" + lhs->toString() + ")";
+    return Expression::addBrackets(rhs) +"." + Expression::addBrackets(lhs);
 }
 
 Regex::Expression *Regex::Concat::clone() const {
     return new Concat(rhs->clone(), lhs->clone());
+}
+
+bool Regex::Concat::isSimple() const {
+    return false;
 }
 
 Regex::KleeneStar::KleeneStar(Regex::Expression *expression)
@@ -194,11 +192,15 @@ NDFA Regex::KleeneStar::toNDFA() const {
 }
 
 String Regex::KleeneStar::toString() const {
-    return "(" + expr->toString() + ")*";
+    return Expression::addBrackets(expr) + "*";
 }
 
 Regex::Expression *Regex::KleeneStar::clone() const {
     return new KleeneStar(expr->clone());
+}
+
+bool Regex::KleeneStar::isSimple() const {
+    return true;
 }
 
 Regex::KleeneStar::~KleeneStar() {
@@ -221,6 +223,10 @@ Regex::Expression *Regex::Letter::clone() const {
     return new Letter(letter);
 }
 
+bool Regex::Letter::isSimple() const {
+    return true;
+}
+
 Regex::Word::Word(const StringView &word) : word(word) {}
 
 NDFA Regex::Word::toNDFA() const {
@@ -239,16 +245,24 @@ Regex::Expression *Regex::Word::clone() const {
     return new Word(word);
 }
 
+bool Regex::Word::isSimple() const {
+    return false;
+}
+
 NDFA Regex::EmptyWord::toNDFA() const {
     return NDFAFactory::emptyWord();
 }
 
 String Regex::EmptyWord::toString() const {
-    return String();
+    return {"\\e"};
 }
 
 Regex::Expression *Regex::EmptyWord::clone() const {
     return new EmptyWord();
+}
+
+bool Regex::EmptyWord::isSimple() const {
+    return true;
 }
 
 NDFA Regex::EmptyLanguage::toNDFA() const {
@@ -256,9 +270,13 @@ NDFA Regex::EmptyLanguage::toNDFA() const {
 }
 
 String Regex::EmptyLanguage::toString() const {
-    return {"\\0"};
+    return {"\\O"};
 }
 
 Regex::Expression *Regex::EmptyLanguage::clone() const {
     return new EmptyLanguage();
+}
+
+bool Regex::EmptyLanguage::isSimple() const {
+    return true;
 }
