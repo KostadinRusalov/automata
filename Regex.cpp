@@ -39,8 +39,8 @@ Regex::~Regex() {
     free();
 }
 
-NDFA Regex::createNDFA() const {
-    return expr->createNDFA();
+NDFA Regex::toNDFA() const {
+    return expr->toNDFA();
 }
 
 void Regex::free() {
@@ -72,6 +72,47 @@ namespace {
         }
         return String::npos;
     }
+
+    size_t findInnermostBracket(const StringView &expr) {
+        size_t idx = String::npos;
+        for (size_t i = 0; i < expr.size(); ++i) {
+            if (expr[i] == '(') {
+                idx = i;
+            } else if (expr[i] == ')') {
+                return idx;
+            }
+        }
+        return idx;
+    }
+}
+
+Regex::Expression *Regex::simpleParse(const StringView &expr) {
+    if (expr.empty()) {
+        return new EmptyWord;
+    }
+
+    if (expr.size() == 1) {
+        return new Letter(expr.front());
+    }
+
+    size_t uPos = expr.find((char) Symbol::Union);
+    if (uPos != String::npos) {
+        return new Union(simpleParse(expr.substr(0, uPos)),
+                         simpleParse(expr.substr(uPos + 1)));
+    }
+
+    size_t cPos = expr.find((char) Symbol::Concat);
+    if (cPos != String::npos) {
+        return new Concat(simpleParse(expr.substr(0, cPos)),
+                          simpleParse(expr.substr(cPos + 1)));
+    }
+
+    size_t sPos = expr.find((char) Symbol::Star);
+    if (sPos != String::npos) {
+        return new KleeneStar(simpleParse(expr.substr(0, sPos)));
+    }
+
+    return new Word(expr);
 }
 
 Regex::Expression *Regex::parse(const StringView &expr) {
@@ -83,24 +124,24 @@ Regex::Expression *Regex::parse(const StringView &expr) {
         return new Letter(expr.front());
     }
 
-    size_t uPos = expr.find('+');
-    if (uPos != String::npos) {
-        return new Union(parse(expr.substr(0, uPos)),
-                         parse(expr.substr(uPos + 1)));
+    size_t innermost = findInnermostBracket(expr);
+
+    if (innermost == String::npos) {
+        return simpleParse(expr);
     }
 
-    size_t cPos = expr.find('.');
-    if (cPos != String::npos) {
-        return new Concat(parse(expr.substr(0, cPos)),
-                          parse(expr.substr(cPos + 1)));
+    size_t balanced = findBalancedBracket(innermost, expr);
+    if (balanced == String::npos) {
+        throw std::invalid_argument("invalid expression");
     }
 
-    size_t sPos = expr.find('*');
-    if (sPos != String::npos) {
-        return new KleeneStar(parse(expr.substr(0, sPos)));
+    if (balanced == expr.size() - 1) {
+        // todo
     }
+    switch (expr[balanced + 1]) {
 
-    return new Word(expr);
+    }
+    return nullptr;
 }
 
 Regex::Binary::Binary(Expression *rhs, Expression *lhs)
@@ -114,8 +155,12 @@ Regex::Binary::~Binary() {
 Regex::Union::Union(Regex::Expression *rhs, Regex::Expression *lhs)
         : Binary(rhs, lhs) {}
 
-NDFA Regex::Union::createNDFA() {
-    return rhs->createNDFA() | lhs->createNDFA();
+NDFA Regex::Union::toNDFA() {
+    return rhs->toNDFA() | lhs->toNDFA();
+}
+
+String Regex::Union::toString() {
+    return "(" + rhs->toString() + ")+(" + lhs->toString() + ")";
 }
 
 Regex::Expression *Regex::Union::clone() {
@@ -125,8 +170,12 @@ Regex::Expression *Regex::Union::clone() {
 Regex::Concat::Concat(Regex::Expression *rhs, Regex::Expression *lhs)
         : Binary(rhs, lhs) {}
 
-NDFA Regex::Concat::createNDFA() {
-    return rhs->createNDFA() * lhs->createNDFA();
+NDFA Regex::Concat::toNDFA() {
+    return rhs->toNDFA() * lhs->toNDFA();
+}
+
+String Regex::Concat::toString() {
+    return "(" + rhs->toString() + ").(" + lhs->toString() + ")";
 }
 
 Regex::Expression *Regex::Concat::clone() {
@@ -136,8 +185,12 @@ Regex::Expression *Regex::Concat::clone() {
 Regex::KleeneStar::KleeneStar(Regex::Expression *expression)
         : expr(expression) {}
 
-NDFA Regex::KleeneStar::createNDFA() {
-    return *expr->createNDFA();
+NDFA Regex::KleeneStar::toNDFA() {
+    return *expr->toNDFA();
+}
+
+String Regex::KleeneStar::toString() {
+    return "(" + expr->toString() + ")*";
 }
 
 Regex::Expression *Regex::KleeneStar::clone() {
@@ -150,8 +203,12 @@ Regex::KleeneStar::~KleeneStar() {
 
 Regex::Letter::Letter(char letter) : letter(letter) {}
 
-NDFA Regex::Letter::createNDFA() {
+NDFA Regex::Letter::toNDFA() {
     return NDFAFactory::exact(letter);
+}
+
+String Regex::Letter::toString() {
+    return String(letter);
 }
 
 Regex::Expression *Regex::Letter::clone() {
@@ -160,26 +217,40 @@ Regex::Expression *Regex::Letter::clone() {
 
 Regex::Word::Word(const StringView &word) : word(word) {}
 
-NDFA Regex::Word::createNDFA() {
+NDFA Regex::Word::toNDFA() {
     return NDFAFactory::exact(word);
+}
+
+String Regex::Word::toString() {
+    String s(word.size());
+    for (char c: word) {
+        s += c;
+    }
+    return s;
 }
 
 Regex::Expression *Regex::Word::clone() {
     return new Word(word);
 }
 
-NDFA Regex::EmptyWord::createNDFA() {
+NDFA Regex::EmptyWord::toNDFA() {
     return NDFAFactory::emptyWord();
+}
+
+String Regex::EmptyWord::toString() {
+    return String();
 }
 
 Regex::Expression *Regex::EmptyWord::clone() {
     return new EmptyWord();
 }
 
-NDFA Regex::EmptyLanguage::createNDFA() {
+NDFA Regex::EmptyLanguage::toNDFA() {
     return NDFAFactory::emptyLanguage();
 }
-
+String Regex::EmptyLanguage::toString() {
+    return {"\\0"};
+}
 Regex::Expression *Regex::EmptyLanguage::clone() {
     return new EmptyLanguage();
 }

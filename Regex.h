@@ -44,7 +44,7 @@ public:
 
     ~Regex();
 
-    NDFA createNDFA() const;
+    NDFA toNDFA() const;
 
 private:
     void free();
@@ -53,7 +53,9 @@ private:
 
     void moveFrom(Regex &&other);
 
-    static Expression *parse(const StringView &expression);
+    static Expression *simpleParse(const StringView &expr);
+
+    static Expression *parse(const StringView &expr);
 };
 
 enum class Regex::Symbol {
@@ -66,7 +68,9 @@ enum class Regex::Symbol {
 
 class Regex::Expression {
 public:
-    virtual NDFA createNDFA() = 0;
+    virtual NDFA toNDFA() = 0;
+
+    virtual String toString() = 0;
 
     virtual Expression *clone() = 0;
 
@@ -88,7 +92,9 @@ class Regex::Union : public Regex::Binary {
 public:
     Union(Expression *rhs, Expression *lhs);
 
-    NDFA createNDFA() override;
+    NDFA toNDFA() override;
+
+    String toString() override;
 
     Expression *clone() override;
 
@@ -99,7 +105,9 @@ class Regex::Concat : public Regex::Binary {
 public:
     Concat(Expression *rhs, Expression *lhs);
 
-    NDFA createNDFA() override;
+    NDFA toNDFA() override;
+
+    String toString() override;
 
     Expression *clone() override;
 
@@ -113,7 +121,9 @@ private:
 public:
     KleeneStar(Expression *expression);
 
-    NDFA createNDFA() override;
+    NDFA toNDFA() override;
+
+    String toString() override;
 
     Expression *clone() override;
 
@@ -127,7 +137,9 @@ private:
 public:
     Letter(char letter);
 
-    NDFA createNDFA() override;
+    NDFA toNDFA() override;
+
+    String toString() override;
 
     Expression *clone() override;
 
@@ -141,7 +153,9 @@ private:
 public:
     Word(const StringView &word);
 
-    NDFA createNDFA() override;
+    NDFA toNDFA() override;
+
+    String toString() override;
 
     Expression *clone() override;
 
@@ -152,7 +166,9 @@ class Regex::EmptyWord : public Regex::Expression {
 public:
     EmptyWord() = default;
 
-    NDFA createNDFA() override;
+    NDFA toNDFA() override;
+
+    String toString() override;
 
     Expression *clone() override;
 
@@ -163,7 +179,9 @@ class Regex::EmptyLanguage : public Regex::Expression {
 public:
     EmptyLanguage() = default;
 
-    NDFA createNDFA() override;
+    NDFA toNDFA() override;
+
+    String toString() override;
 
     Expression *clone() override;
 
