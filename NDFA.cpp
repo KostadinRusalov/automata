@@ -338,8 +338,12 @@ NDFA::State NDFA::addNewState(CDFA<BitSubset> &d, NDFA::State from, char with,
 DFA NDFA::determinized() const {
     CDFA<BitSubset> d(alphabet_);
 
+    auto init = d.addInitialState({initialStates.elements()});
+    if (initialStates.intersectsWith(finalStates)) {
+        d.makeFinalState(init);
+    }
     Queue<State> created;
-    created.push(d.addInitialState({initialStates.elements()}));
+    created.push(init);
 
     while (!created.empty()) {
         auto state = created.peek();
