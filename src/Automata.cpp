@@ -1,6 +1,6 @@
-#include "Automata.h"
+#include "../include/Automata.h"
 #include <fstream>
-#include "File.hpp"
+#include "../include/helpers/File.hpp"
 
 void Automata::setAlphabet(const Alphabet &alphabet) {
     alphabet_ = alphabet;

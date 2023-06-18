@@ -1,7 +1,8 @@
 #pragma once
 
-#include "MyStructures/Pair/Pair.hpp"
+#include "../MyStructures/Pair/Pair.hpp"
 #include "Automata.h"
+#include "../MyStructures/StringView/StringView.h"
 
 class DFA : public Automata {
 public:

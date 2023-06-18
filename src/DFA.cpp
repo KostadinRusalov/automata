@@ -1,11 +1,11 @@
-#include "DFA.h"
-#include "NDFA.h"
+#include "../include/DFA.h"
+#include "../include/NDFA.h"
 
-#include "MyStructures/Algorithm.hpp"
-#include "MyStructures/Queue/Queue.hpp"
-#include "SubtractOneAfter.hpp"
+#include "../MyStructures/Algorithm.hpp"
+#include "../MyStructures/Queue/Queue.hpp"
+#include "../include/helpers/SubtractOneAfter.hpp"
 #include <fstream>
-#include "File.hpp"
+#include "../include/helpers/File.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet_!";
@@ -266,7 +266,10 @@ DFA operator/(const DFA &rhs, const DFA &lhs) {
 }
 
 DFA operator&(const DFA &rhs, const DFA &lhs) {
-    // TODO
+    typedef Pair<DFA::State, DFA::State> State;
+
+    CDFA<State> in;
+    return {};
 }
 
 DFA DFA::total() const {

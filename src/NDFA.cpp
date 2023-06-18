@@ -1,9 +1,9 @@
-#include "NDFA.h"
-#include "SubtractOneAfter.hpp"
-#include "MyStructures/Queue/Queue.hpp"
-#include "CDFA.hpp"
+#include "../include/NDFA.h"
+#include "../include/helpers/SubtractOneAfter.hpp"
+#include "../MyStructures/Queue/Queue.hpp"
+#include "../include/CDFA.hpp"
 #include "fstream"
-#include "File.hpp"
+#include "../include/helpers/File.hpp"
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet_!";

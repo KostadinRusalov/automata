@@ -1,5 +1,5 @@
-#include "Regex.h"
-#include "NDFAFactory.h"
+#include "../include/Regex.h"
+#include "../include/NDFAFactory.h"
 
 Regex::Regex() {
     expr = new EmptyLanguage();

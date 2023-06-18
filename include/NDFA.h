@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Automata.h"
-#include "MyStructures/Pair/Pair.hpp"
+#include "../MyStructures/Pair/Pair.hpp"
 #include "DFA.h"
 #include "CDFA.hpp"
 

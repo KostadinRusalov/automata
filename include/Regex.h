@@ -1,7 +1,7 @@
 #pragma once
 
 #include "NDFA.h"
-#include "MyStructures/StringView/StringView.h"
+#include "../MyStructures/StringView/StringView.h"
 
 class Regex {
 public:

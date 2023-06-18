@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MyStructures/Set/Set.hpp"
-#include "MyStructures/Vector/Vector.hpp"
+#include "../../MyStructures/Set/Set.hpp"
+#include "../../MyStructures/Vector/Vector.hpp"
 
 #include <fstream>
 

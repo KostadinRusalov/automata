@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MyStructures/Set/Set.hpp"
-#include "MyStructures/BitSubset/BitSubset.h"
+#include "../MyStructures/Set/Set.hpp"
+#include "../MyStructures/BitSubset/BitSubset.h"
 
 class DFA;
 

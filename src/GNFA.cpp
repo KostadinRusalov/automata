@@ -1,4 +1,4 @@
-#include "GNFA.h"
+#include "../include/GNFA.h"
 
 typedef Regex::Letter Letter;
 typedef Regex::EmptyWord EmptyWord;

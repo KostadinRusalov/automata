@@ -1,4 +1,4 @@
-#include "NDFAFactory.h"
+#include "../include/NDFAFactory.h"
 
 namespace {
     void addConsecutiveTransitions(NDFA &n, NDFA::State &from, const char *word, bool alphabet = false) {
