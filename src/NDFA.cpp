@@ -271,7 +271,8 @@ NDFA &NDFA::operator*=(const NDFA &other) {
     }
 
     if (!other.initialStates.intersectsWith(other.finalStates)) {
-        for (auto final: finalStates) {
+        auto copy = finalStates;
+        for (auto final: copy) {
             finalStates.remove(final);
         }
     }

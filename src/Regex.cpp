@@ -224,8 +224,7 @@ Regex::KleeneStar::~KleeneStar() {
     delete expr;
 }
 
-Regex::Letter::Letter(char
-                      letter) : letter(letter) {}
+Regex::Letter::Letter(char letter) : letter(letter) {}
 
 NDFA Regex::Letter::toNDFA() const {
     return NDFAFactory::exact(letter);
