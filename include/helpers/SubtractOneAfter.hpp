@@ -15,7 +15,7 @@ Subtract<N, Num>::Subtract(const Num &after) : after(after) {}
 
 template<size_t N, class Num>
 Num Subtract<N, Num>::operator()(const Num &num) {
-    return num > after ? num - N : num;
+    return num >= after ? num - N : num;
 }
 
 template<class T, class Collection>

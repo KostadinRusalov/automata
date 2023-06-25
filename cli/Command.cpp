@@ -19,9 +19,10 @@ void CreateNDFA::run() {
 Determinize::Determinize(size_t idx) : idx(idx) {}
 
 void Determinize::run() {
-    if (!validate(idx)) {
-        return;
-    }
+//    if (!validate(idx)) {
+//        std::cout << "invalid index!";
+//        return;
+//    }
 
     DFA d = automatas[idx].determinized();
     print(d);

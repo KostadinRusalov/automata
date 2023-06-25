@@ -1,6 +1,7 @@
 #include <cstring>
 #include "String.h"
 #include "BitManipulation.h"
+#include "../StringView/StringView.h"
 
 String::String(size_t capacity) : data{} {
     if (capacity > ssoCapacity) {
@@ -246,8 +247,16 @@ String &String::operator+=(const String &other) {
     return *this;
 }
 
+String &String::operator+=(const StringView &view) {
+    for (char c: view) {
+        operator+=(c);
+    }
+    return *this;
+}
+
 String &String::operator+=(char c) {
     size_t newLen = length() + 1;
+
     if (isOptimised() && newLen <= ssoCapacity) {
         staticStr()[newLen - 1] = c;
         staticStr()[newLen] = '\0';
@@ -295,6 +304,7 @@ String operator+(const String &lhs, const String &rhs) {
 
     return res;
 }
+
 
 bool operator<(const String &lhs, const String &rhs) {
     return strcmp(lhs.c_str(), rhs.c_str()) < 0;
