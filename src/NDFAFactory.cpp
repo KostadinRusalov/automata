@@ -116,11 +116,11 @@ NDFA NDFAFactory::suffix(const char *word) {
 
     auto q = n.addInitialState();
 
-    addSelfTransitions(n, q);
-
+    auto initial = q;
     addConsecutiveTransitions(n, q, word, true);
 
     n.makeFinalState(q);
+    addSelfTransitions(n, initial);
 
     return n;
 }

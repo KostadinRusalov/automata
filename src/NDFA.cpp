@@ -4,6 +4,7 @@
 #include "../include/CDFA.hpp"
 #include "fstream"
 #include "../include/helpers/File.hpp"
+#include <queue>
 
 const char INVALID_STATE[] = "There is no such state in the DFA!";
 const char INVALID_SYMBOL[] = "There is no such symbol in the alphabet_!";
@@ -271,7 +272,8 @@ NDFA &NDFA::operator*=(const NDFA &other) {
     }
 
     if (!other.initialStates.intersectsWith(other.finalStates)) {
-        for (auto final: finalStates) {
+        auto copy = finalStates;
+        for (auto final: copy) {
             finalStates.remove(final);
         }
     }

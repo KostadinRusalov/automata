@@ -22,6 +22,9 @@
  * if the size is 23 the last char will be 23 - 23 = 0 or a null terminator
  *
  */
+
+class StringView;
+
 class String {
 public:
     typedef char value_type;
@@ -118,6 +121,8 @@ public:
     String substr(size_t);
 
     String &operator+=(const String &);
+
+    String &operator+=(const StringView &);
 
     String &operator+=(char);
 

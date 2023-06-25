@@ -48,6 +48,8 @@ public:
 
     String toString() const;
 
+    static const String EPSILON;
+
 private:
     void free();
 
@@ -63,6 +65,7 @@ private:
 enum class Regex::Symbol {
     OpenBracket = '(',
     CloseBracket = ')',
+    Concat = ',',
     Union = '+',
     Star = '*'
 };
@@ -147,6 +150,21 @@ public:
     ~Letter() override = default;
 };
 
+class Regex::Word : public Regex::Expression {
+private:
+    String word;
+
+public:
+    Word(const StringView &word);
+
+    NDFA toNDFA() const override;
+
+    String toString() const override;
+
+    Expression *clone() const override;
+
+    ~Word() override = default;
+};
 
 class Regex::EmptyWord : public Regex::Expression {
 public:

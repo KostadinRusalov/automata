@@ -50,7 +50,10 @@ void DFA::removeState(DFA::State state) {
         initialState = errorState();
     }
 
-    removeAndShift(state, finalStates);
+    //removeAndShift(state, finalStates);
+
+    kstd::transform(finalStates.begin(), finalStates.end(), finalStates.begin(),
+                    [state](State s) { return s >= state ? s - 1 : s; });
 
     transitions.erase(transitions.cbegin() + state);
     for (auto &stateTr: transitions) {
@@ -104,6 +107,7 @@ void DFA::addTransition(DFA::State from, char with, DFA::State to) {
                 return tr.first == with;
             }
     );
+
     if (tr == stateTr.end()) {
         stateTr.pushBack({with, to});
     } else {
@@ -181,21 +185,24 @@ bool DFA::accepts(const char *word) const {
 }
 
 NDFA DFA::reversed() const {
-    NDFA rev(alphabet_);
+    DFA d(*this);
+    d.makeTotal();
 
-    for (State s = 0; s <= lastState(); ++s) {
+    NDFA rev(d.alphabet_);
+
+    for (State s = 0; s <= d.lastState(); ++s) {
         rev.addState();
     }
 
-    BitSubset finals(finalStates.elements());
-    for (State s = 0; s <= lastState(); ++s) {
-        for (auto &tr: transitions[s]) {
+    BitSubset finals(d.finalStates.elements());
+    for (State s = 0; s <= d.lastState(); ++s) {
+        for (auto &tr: d.transitions[s]) {
             rev.addTransition(tr.second, tr.first, s);
         }
         if (finals.contains(s)) {
             rev.makeInitialState(s);
         }
-        if (s == initialState) {
+        if (s == d.initialState) {
             rev.makeFinalState(s);
         }
     }
