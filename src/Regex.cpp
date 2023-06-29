@@ -103,7 +103,6 @@ Regex::Expression *Regex::simpleParse(const StringView &expr) {
         return new Letter(expr.front());
     }
 
-
     size_t uPos = findOperation(Symbol::Union, expr);
     if (uPos != String::npos) {
         if (expr.front() == '(')
