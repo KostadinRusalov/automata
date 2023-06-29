@@ -1,0 +1,3 @@
+/Users/kostadinroussalov/Documents/uni/sem-2/oop/automata/cmake-build-debug/CMakeFiles/main.cpp.dir
+/Users/kostadinroussalov/Documents/uni/sem-2/oop/automata/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/kostadinroussalov/Documents/uni/sem-2/oop/automata/cmake-build-debug/CMakeFiles/rebuild_cache.dir
